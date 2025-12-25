@@ -1,5 +1,6 @@
 ﻿using DAL.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using MTHAPI.DTO.Note;
 
 namespace MTHAPI.Controllers
 {
@@ -30,44 +31,72 @@ namespace MTHAPI.Controllers
             return Ok(note);
         }
 
-        // POST: api/notes
         [HttpPost]
-        public IActionResult Create(Note note)
+        public async Task<IActionResult> Create([FromBody] NoteCreateDTO noteDto)
         {
-            note.CreatedAt = DateTime.UtcNow;
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var note = new Note
+            {
+                Title = noteDto.Title,
+                Description = noteDto.Description,
+                Content = noteDto.Content,
+                Price = noteDto.Price,
+                IsFree = noteDto.IsFree,
+                FileUrl = noteDto.FileUrl,
+                Pages = noteDto.Pages,
+                CreatedAt = DateTime.UtcNow
+            };
+
             _unitOfWork.Notes.Add(note);
-            _unitOfWork.CompleteAsync();
+            await _unitOfWork.CompleteAsync();
 
             return Ok(note);
         }
 
-        // PUT: api/notes/{id}
         [HttpPut("{id}")]
-        public IActionResult Update(int id, Note updatedNote)
+        public async Task<IActionResult> Update(int id, [FromBody] NoteUpdateDTO noteDto)
         {
             var note = _unitOfWork.Notes.GetById(id);
             if (note == null) return NotFound();
 
-            note.Title = updatedNote.Title;
-            note.Content = updatedNote.Content;
-            note.Description = updatedNote.Description;
-            note.Price = updatedNote.Price;
+            note.Title = noteDto.Title;
+            note.Description = noteDto.Description;
+            note.Content = noteDto.Content;
+            note.Price = noteDto.Price;
+            note.IsFree = noteDto.IsFree;
+            note.FileUrl = noteDto.FileUrl;
+            note.Pages = noteDto.Pages;
 
-            _unitOfWork.CompleteAsync();
+            await _unitOfWork.CompleteAsync();
             return NoContent();
         }
+
 
         // DELETE: api/notes/{id}  (SOFT DELETE)
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var note = _unitOfWork.Notes.GetById(id);
             if (note == null) return NotFound();
 
-            _unitOfWork.Notes.SoftDelete(note);
-            _unitOfWork.CompleteAsync();
+            note.IsDeleted = true;
+            await _unitOfWork.CompleteAsync();
 
             return NoContent();
         }
+
+        [HttpPut("{id}/restore")]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var note = _unitOfWork.Notes.GetById(id);
+            if (note == null) return NotFound();
+
+            note.IsDeleted = false;
+            await _unitOfWork.CompleteAsync();
+
+            return NoContent();
+        }
+
     }
 }

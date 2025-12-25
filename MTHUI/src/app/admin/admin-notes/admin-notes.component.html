@@ -1,90 +1,246 @@
-<div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Admin Notes</h1>
-
-  <!-- VIEW / DELETE CONFIRMATION -->
-  <div *ngIf="(mode === 'view' || mode === 'delete') && selectedNote" class="border p-4 rounded mb-6 bg-gray-50">
-    <h2 class="text-xl font-semibold mb-3">
-      {{ mode === 'delete' ? 'Confirm Delete Note' : 'View Note' }}
-    </h2>
-
-    <p><b>Title:</b> {{ selectedNote.title }}</p>
-    <p><b>Description:</b> {{ selectedNote.description }}</p>
-    <p><b>Content:</b> {{ selectedNote.content }}</p>
-    <p><b>Author:</b> {{ selectedNote.author }}</p>
-    <p><b>Price:</b> {{ selectedNote.price }}</p>
-    <p><b>Created:</b> {{ selectedNote.createdAt | date:'medium' }}</p>
-
-    <div class="mt-4 flex gap-2">
-      <button *ngIf="mode === 'delete'" class="bg-red-600 text-white px-4 py-2 rounded" (click)="deleteNote()">Delete</button>
-      <button class="bg-gray-500 text-white px-4 py-2 rounded" (click)="close()">
-        {{ mode === 'delete' ? 'Cancel' : 'Close' }}
-      </button>
-    </div>
+<div class="container mx-auto p-4 text-center">
+  <!-- Header + Create Button -->
+  <div class="flex justify-between items-center mb-4" *ngIf="mode === null">
+    <h2 class="text-2xl font-bold">MANAGE NOTES</h2>
+    <button class="btn btn-primary px-5 py-2 rounded"
+            (click)="createNewNote()">
+      + New Note
+    </button>
   </div>
 
-  <!-- CREATE / EDIT FORM -->
-<div *ngIf="(mode === 'create' || mode === 'edit') && selectedNote" class="border p-4 rounded mb-6">
-  <h2 class="text-xl font-semibold mb-3">{{ mode === 'edit' ? 'Edit Note' : 'Create Note' }}</h2>
-  <form (ngSubmit)="saveNote()">
-
-    <label class="block mb-2">
-      Title:
-      <input class="border p-2 w-full" [(ngModel)]="selectedNote.title" name="title" placeholder="Title" required />
-    </label>
-
-    <label class="block mb-2">
-      Content:
-      <textarea class="border p-2 w-full" [(ngModel)]="selectedNote.content" name="content" placeholder="Content" required></textarea>
-    </label>
-
-    <label class="block mb-2">
-      Description:
-      <input class="border p-2 w-full" [(ngModel)]="selectedNote.description" name="description" placeholder="Description" />
-    </label>
-
-    <label class="block mb-2">
-      Author:
-      <input class="border p-2 w-full" [(ngModel)]="selectedNote.author" name="author" placeholder="Author" />
-    </label>
-
-    <label class="block mb-2">
-      Price:
-      <input type="number" class="border p-2 w-full" [(ngModel)]="selectedNote.price" name="price" placeholder="Price" />
-    </label>
-
-    <div class="mt-2 flex gap-2">
-      <button class="bg-blue-600 text-white px-4 py-2 rounded">{{ mode === 'edit' ? 'Update' : 'Create' }}</button>
-      <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded" (click)="close()">Cancel</button>
-    </div>
-
-  </form>
-</div>
-
-
-  <!-- CREATE BUTTON -->
-  <button *ngIf="!mode" class="bg-green-600 text-white px-4 py-2 rounded mb-4" (click)="createNewNote()">Create New Note</button>
-
-  <!-- NOTES TABLE -->
-  <table class="w-full border">
+  <!-- Notes Table -->
+  <table *ngIf="mode === null" class="table table-hover table-striped border border-gray w-full">
     <thead>
-      <tr class="bg-gray-200">
-        <th class="border p-2">ID</th>
-        <th class="border p-2">Title</th>
-        <th class="border p-2">Author</th>
-        <th class="border p-2">Actions</th>
+      <tr class="table-primary">
+        <th>ID</th>
+        <th>Title</th>
+        <th>Price</th>
+        <th>Free</th>
+        <th>Pages</th>
+        <th>Status</th>
+        <th>Actions</th>
       </tr>
     </thead>
+
     <tbody>
-      <tr *ngFor="let note of notes$ | async">
-        <td class="border p-2">{{ note.id }}</td>
-        <td class="border p-2">{{ note.title }}</td>
-        <td class="border p-2">{{ note.author }}</td>
-        <td class="border p-2 flex gap-2">
-          <button class="bg-blue-600 text-white px-2 py-1 rounded" (click)="viewNote(note)">View</button>
-          <button class="bg-yellow-500 text-white px-2 py-1 rounded" (click)="editNote(note)">Edit</button>
-          <button class="bg-red-600 text-white px-2 py-1 rounded" (click)="confirmDelete(note)">Delete</button>
+      <tr *ngFor="let note of notes$ | async"
+          [class.opacity-100]="note.isDeleted"
+          [class.line-through]="note.isDeleted">
+
+        <td>{{ note.id }}</td>
+        <td>{{ note.title }}</td>
+        <td>{{ note.price | currency }}</td>
+        <td>{{note.isFree ? 'Yes' : 'No' }}</td>
+        <td>{{ note.pages }}</td>
+
+        <td>
+          <span *ngIf="note.isDeleted">
+            Deleted
+          </span>
+          <span *ngIf="!note.isDeleted">
+            Active
+          </span>
+        </td>
+
+        <td class="d-flex justify-content-center align-items-center gap-3">
+          <button class="btn btn-info px-2 py-1 rounded"
+                  (click)="viewNote(note)"
+                  [disabled]="note.isDeleted">
+            View
+          </button>
+
+          <button class="btn btn-secondary px-2 py-1 rounded"
+                  (click)="editNote(note)"
+                  [disabled]="note.isDeleted">
+            Edit
+          </button>
+
+          <button class="btn btn-danger px-2 py-1 rounded"
+                  (click)="confirmDelete(note)"
+                  [disabled]="note.isDeleted">
+            Delete
+          </button>
+
+          <button *ngIf="note.isDeleted"
+                  class="btn btn-dark px-2 py-1 rounded"
+                  (click)="restoreNote(note)">
+            Undo
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="(notes$ | async)?.length === 0">
+        <td colspan="6" class="text-center py-2">
+          No notes available.
         </td>
       </tr>
     </tbody>
   </table>
+  <!-- Form / Modal Section -->
+  <div *ngIf="selectedNote as note"
+       class="mt-6 rounded">
+
+    <h3>
+      {{
+        mode === 'create' ? 'Create New Note'
+        : mode === 'edit' ? 'Edit Note'
+        : mode === 'view' ? 'View Note'
+        : 'Delete Note'
+      }}
+    </h3>
+    <div *ngIf="mode === 'delete'">
+      <div class="card border border-danger mt-4">
+        <div class="card-header text-danger">
+          <h5>Confirm Delete</h5>
+        </div>
+
+        <div class="card-body" *ngIf="note">
+          <p>Are you sure you want to delete this note? All details are shown below:</p>
+
+          <table class="table table-bordered">
+            <tbody>
+              <tr><th>ID</th><td>{{ note.id }}</td></tr>
+              <tr><th>Title</th><td>{{ note.title }}</td></tr>
+              <tr><th>Description</th><td>{{ note.description || '—' }}</td></tr>
+              <tr><th>Content</th><td>{{ note.content || '—' }}</td></tr>
+              <tr><th>Price</th><td>{{ note.price | currency }}</td></tr>
+              <tr><th>Is Free</th><td>{{ note.isFree ? 'Yes' : 'No' }}</td></tr>
+              <tr><th>Pages</th><td>{{ note.pages }}</td></tr>
+              <tr>
+                <th>File URL</th>
+                <td>
+                  <a *ngIf="note.fileUrl" [href]="note.fileUrl" target="_blank">{{ note.fileUrl }}</a>
+                  <span *ngIf="!note.fileUrl">—</span>
+                </td>
+              </tr>
+              <tr><th>Created At</th><td>{{ note.createdAt | date:'medium' }}</td></tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="note.reviews?.length">
+            <h6>Reviews:</h6>
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Rating</th>
+                  <th>Comment</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let review of note.reviews">
+                  <td>{{ review.rating }}</td>
+                  <td>{{ review.comment }}</td>
+                  <td>{{ review.createdAt | date:'short' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-3">
+            <button class="btn btn-danger me-2" (click)="deleteNote()">Delete</button>
+            <button class="btn btn-secondary" (click)="close()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Create / Edit / View Form -->
+    <div class="container mt-4" style="max-width: 600px;">
+      <form *ngIf="mode === 'create' || mode === 'edit' || mode === 'view'"
+            (ngSubmit)="saveNote()">
+        <div class="card border border-secondary">
+          <div class="card-body">
+
+            <!-- Title -->
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="selectedNote.title"
+                     name="title"
+                     [readonly]="mode === 'view'">
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control"
+                        rows="2"
+                        [(ngModel)]="selectedNote.description"
+                        name="description"
+                        [readonly]="mode === 'view'"></textarea>
+            </div>
+
+            <!-- Content -->
+            <div class="mb-3">
+              <label class="form-label">Content</label>
+              <textarea class="form-control"
+                        rows="3"
+                        [(ngModel)]="selectedNote.content"
+                        name="content"
+                        [readonly]="mode === 'view'"></textarea>
+            </div>
+
+            <!-- Price / Pages / Free -->
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label">Price</label>
+                <input type="number"
+                       class="form-control"
+                       [(ngModel)]="selectedNote.price"
+                       name="price"
+                       [readonly]="mode === 'view'">
+              </div>
+
+              <div class="col">
+                <label class="form-label">Pages</label>
+                <input type="number"
+                       class="form-control"
+                       [(ngModel)]="selectedNote.pages"
+                       name="pages"
+                       [readonly]="mode === 'view'">
+              </div>
+            </div>
+
+            <!-- Free -->
+            <div class="mb-2">
+              <input class="form-check-input me-2"
+                     type="checkbox"
+                     [(ngModel)]="selectedNote.isFree"
+                     name="isFree"
+                     [disabled]="mode === 'view'">
+              <label class="form-check-label">
+                Free
+              </label>
+            </div>
+
+            <!-- File URL -->
+            <div class="mb-4">
+              <label class="form-label">File URL</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="selectedNote.fileUrl"
+                     name="fileUrl"
+                     [readonly]="mode === 'view'">
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+              <button *ngIf="mode !== 'view'"
+                      type="submit"
+                      class="btn btn-success px-4">
+                Save
+              </button>
+
+              <button type="button"
+                      (click)="close()"
+                      class="btn btn-secondary px-8">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

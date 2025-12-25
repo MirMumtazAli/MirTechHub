@@ -1,10 +1,30 @@
 export interface Note {
-  id?: number;            // optional for create
+  id: number;
   title: string;
-  content: string;
-  description: string;
-  author: string;
-  createdAt?: string;      // server sets this
+  description?: string;
+  content?: string;
   price: number;
-  isDeleted?: boolean;     // optional, for soft delete
+  isFree: boolean;
+  fileUrl?: string;
+  pages: number;
+  createdAt: Date;
+  reviews?: Review[];
+  isDeleted: boolean; // <-- add this
+}
+
+export interface NoteForm {
+  title: string;
+  description?: string;
+  content?: string;
+  price: number;
+  isFree: boolean;
+  fileUrl?: string;
+  pages: number;
+}
+
+export interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: Date;
 }

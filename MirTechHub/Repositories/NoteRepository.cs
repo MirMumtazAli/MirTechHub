@@ -1,7 +1,4 @@
 ﻿using DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -15,17 +12,18 @@ namespace DAL.Repositories
             _context = context;
         }
 
+        // ADMIN: get ALL notes (active + deleted)
         public IEnumerable<Note> GetAll()
         {
             return _context.Notes
-                .Where(n => !n.IsDeleted)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToList();
         }
 
+        // Allow fetching deleted notes (needed for Undo)
         public Note GetById(int id)
         {
-            return _context.Notes.FirstOrDefault(n => n.Id == id && !n.IsDeleted);
+            return _context.Notes.FirstOrDefault(n => n.Id == id);
         }
 
         public void Add(Note note)
@@ -38,9 +36,17 @@ namespace DAL.Repositories
             _context.Notes.Update(note);
         }
 
+        // Soft delete remains same
         public void SoftDelete(Note note)
         {
             note.IsDeleted = true;
+            _context.Notes.Update(note);
+        }
+
+        // OPTIONAL (recommended): Restore / Undo
+        public void Restore(Note note)
+        {
+            note.IsDeleted = false;
             _context.Notes.Update(note);
         }
     }

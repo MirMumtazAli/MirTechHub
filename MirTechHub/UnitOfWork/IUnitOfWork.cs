@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DAL.UnitOfWork
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         INoteRepository Notes { get; }
         ISoftwareRepository Softwares { get; }
@@ -16,6 +16,4 @@ namespace DAL.UnitOfWork
         IBlogRepository Blogs { get; }
         Task<int> CompleteAsync();
     }
-
-
 }
