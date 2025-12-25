@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="../MTHAPI/MTHAPI.csproj" />
+  <Project Path="../MTHUI/MTHUI.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="DAL.csproj" />
+</Solution>

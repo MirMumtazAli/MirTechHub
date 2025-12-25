@@ -1,0 +1,6 @@
+<h2>Available Notes</h2>
+<ul>
+  <li *ngFor="let note of notes" (click)="viewDetails(note.id)">
+    {{ note.title }} - ${{ note.price }}
+  </li>
+</ul>

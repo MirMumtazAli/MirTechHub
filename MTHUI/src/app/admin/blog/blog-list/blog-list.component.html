@@ -1,0 +1,8 @@
+<h2>Manage Blogs</h2>
+<ul>
+  <li *ngFor="let blog of blogs">
+    {{ blog.title }} - {{ blog.createdAt | date:'medium' }}
+    <button (click)="editBlog(blog.id)">Edit</button>
+    <button (click)="deleteBlog(blog.id)">Delete</button>
+  </li>
+</ul>

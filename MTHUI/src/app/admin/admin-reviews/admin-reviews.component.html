@@ -1,0 +1,21 @@
+<h2>Admin Reviews</h2>
+<ul>
+  <li *ngFor="let review of reviews">
+    {{ review.productType }} #{{ review.productId }} - Rating: {{ review.rating }}
+    <button (click)="selectReview(review)">Edit</button>
+    <button (click)="deleteReview(review.id)">Delete</button>
+  </li>
+</ul>
+
+<div *ngIf="selectedReview">
+  <h3>Edit Review</h3>
+  <label>
+    Rating:
+    <input type="number" [(ngModel)]="selectedReview.rating" min="1" max="5">
+  </label>
+  <label>
+    Comment:
+    <textarea [(ngModel)]="selectedReview.comment"></textarea>
+  </label>
+  <button (click)="updateReview(selectedReview)">Update</button>
+</div>

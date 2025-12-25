@@ -1,0 +1,6 @@
+<h2>Available Softwares</h2>
+<ul>
+  <li *ngFor="let s of softwares" (click)="viewDetails(s.id)">
+    {{ s.name }} - {{ s.version }} - ${{ s.price }}
+  </li>
+</ul>

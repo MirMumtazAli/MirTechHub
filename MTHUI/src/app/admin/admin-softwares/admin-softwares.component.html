@@ -1,0 +1,16 @@
+<h2>Admin Softwares</h2>
+<ul>
+  <li *ngFor="let s of softwares">
+    {{ s.name }} - {{ s.version }}
+    <button (click)="selectSoftware(s)">Edit</button>
+    <button (click)="deleteSoftware(s.id)">Delete</button>
+  </li>
+</ul>
+
+<div *ngIf="selectedSoftware">
+  <h3>Edit Software</h3>
+  <input [(ngModel)]="selectedSoftware.name" placeholder="Name">
+  <input [(ngModel)]="selectedSoftware.version" placeholder="Version">
+  <input [(ngModel)]="selectedSoftware.price" placeholder="Price">
+  <button (click)="updateSoftware(selectedSoftware)">Update</button>
+</div>

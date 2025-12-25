@@ -1,0 +1,7 @@
+<h2>My Orders</h2>
+<ul>
+  <li *ngFor="let order of orders">
+    Order #{{ order.id }} - Total: ${{ order.totalAmount }} - Status: {{ order.status }}
+    <button (click)="cancelOrder(order.id)" [disabled]="order.status === 'Cancelled'">Cancel</button>
+  </li>
+</ul>

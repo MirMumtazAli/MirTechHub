@@ -1,0 +1,90 @@
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Admin Notes</h1>
+
+  <!-- VIEW / DELETE CONFIRMATION -->
+  <div *ngIf="(mode === 'view' || mode === 'delete') && selectedNote" class="border p-4 rounded mb-6 bg-gray-50">
+    <h2 class="text-xl font-semibold mb-3">
+      {{ mode === 'delete' ? 'Confirm Delete Note' : 'View Note' }}
+    </h2>
+
+    <p><b>Title:</b> {{ selectedNote.title }}</p>
+    <p><b>Description:</b> {{ selectedNote.description }}</p>
+    <p><b>Content:</b> {{ selectedNote.content }}</p>
+    <p><b>Author:</b> {{ selectedNote.author }}</p>
+    <p><b>Price:</b> {{ selectedNote.price }}</p>
+    <p><b>Created:</b> {{ selectedNote.createdAt | date:'medium' }}</p>
+
+    <div class="mt-4 flex gap-2">
+      <button *ngIf="mode === 'delete'" class="bg-red-600 text-white px-4 py-2 rounded" (click)="deleteNote()">Delete</button>
+      <button class="bg-gray-500 text-white px-4 py-2 rounded" (click)="close()">
+        {{ mode === 'delete' ? 'Cancel' : 'Close' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT FORM -->
+<div *ngIf="(mode === 'create' || mode === 'edit') && selectedNote" class="border p-4 rounded mb-6">
+  <h2 class="text-xl font-semibold mb-3">{{ mode === 'edit' ? 'Edit Note' : 'Create Note' }}</h2>
+  <form (ngSubmit)="saveNote()">
+
+    <label class="block mb-2">
+      Title:
+      <input class="border p-2 w-full" [(ngModel)]="selectedNote.title" name="title" placeholder="Title" required />
+    </label>
+
+    <label class="block mb-2">
+      Content:
+      <textarea class="border p-2 w-full" [(ngModel)]="selectedNote.content" name="content" placeholder="Content" required></textarea>
+    </label>
+
+    <label class="block mb-2">
+      Description:
+      <input class="border p-2 w-full" [(ngModel)]="selectedNote.description" name="description" placeholder="Description" />
+    </label>
+
+    <label class="block mb-2">
+      Author:
+      <input class="border p-2 w-full" [(ngModel)]="selectedNote.author" name="author" placeholder="Author" />
+    </label>
+
+    <label class="block mb-2">
+      Price:
+      <input type="number" class="border p-2 w-full" [(ngModel)]="selectedNote.price" name="price" placeholder="Price" />
+    </label>
+
+    <div class="mt-2 flex gap-2">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">{{ mode === 'edit' ? 'Update' : 'Create' }}</button>
+      <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded" (click)="close()">Cancel</button>
+    </div>
+
+  </form>
+</div>
+
+
+  <!-- CREATE BUTTON -->
+  <button *ngIf="!mode" class="bg-green-600 text-white px-4 py-2 rounded mb-4" (click)="createNewNote()">Create New Note</button>
+
+  <!-- NOTES TABLE -->
+  <table class="w-full border">
+    <thead>
+      <tr class="bg-gray-200">
+        <th class="border p-2">ID</th>
+        <th class="border p-2">Title</th>
+        <th class="border p-2">Author</th>
+        <th class="border p-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let note of notes$ | async">
+        <td class="border p-2">{{ note.id }}</td>
+        <td class="border p-2">{{ note.title }}</td>
+        <td class="border p-2">{{ note.author }}</td>
+        <td class="border p-2 flex gap-2">
+          <button class="bg-blue-600 text-white px-2 py-1 rounded" (click)="viewNote(note)">View</button>
+          <button class="bg-yellow-500 text-white px-2 py-1 rounded" (click)="editNote(note)">Edit</button>
+          <button class="bg-red-600 text-white px-2 py-1 rounded" (click)="confirmDelete(note)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

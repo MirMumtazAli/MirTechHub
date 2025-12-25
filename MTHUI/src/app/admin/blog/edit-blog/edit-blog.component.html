@@ -1,0 +1,16 @@
+<div *ngIf="blog">
+  <h2>Edit Blog</h2>
+  <label>
+    Title:
+    <input [(ngModel)]="blog.title">
+  </label>
+  <label>
+    Description:
+    <textarea [(ngModel)]="blog.description"></textarea>
+  </label>
+  <label>
+    Content:
+    <textarea [(ngModel)]="blog.content"></textarea>
+  </label>
+  <button (click)="updateBlog()">Update Blog</button>
+</div>

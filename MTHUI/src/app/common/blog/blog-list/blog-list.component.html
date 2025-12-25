@@ -1,0 +1,8 @@
+<h2>Blogs</h2>
+<ul>
+  <li *ngFor="let blog of blogs"
+      (click)="viewDetail(blog.id)">
+    {{ blog.title }}
+  </li>
+</ul>
+

@@ -1,0 +1,14 @@
+<h2>Add Blog</h2>
+<label>
+  Title:
+  <input [(ngModel)]="blog.title" placeholder="Title">
+</label>
+<label>
+  Description:
+  <textarea [(ngModel)]="blog.description" placeholder="Description"></textarea>
+</label>
+<label>
+  Content:
+  <textarea [(ngModel)]="blog.content" placeholder="Content"></textarea>
+</label>
+<button (click)="submitBlog()">Create Blog</button>

@@ -1,0 +1,7 @@
+<div *ngIf="blog as b">
+  <h2>{{ b.title }}</h2>
+  <p>{{ b.description }}</p>
+  <div [innerHTML]="b.content"></div>
+  <p>Author: {{ b.author }}</p>
+  <p>Created At: {{ b.createdAt | date:'medium' }}</p>
+</div>

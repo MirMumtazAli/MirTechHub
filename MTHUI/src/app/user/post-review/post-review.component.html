@@ -1,0 +1,10 @@
+<h3>Post Review for {{ productType }} #{{ productId }}</h3>
+<label>
+  Rating:
+  <input type="number" [(ngModel)]="rating" min="1" max="5">
+</label>
+<label>
+  Comment:
+  <textarea [(ngModel)]="comment"></textarea>
+</label>
+<button (click)="submitReview()">Submit Review</button>
