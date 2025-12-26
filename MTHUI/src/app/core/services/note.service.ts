@@ -31,4 +31,9 @@ export class NoteService {
   restore(id: number) {
     return this.http.put<void>(`${this.baseUrl}/${id}/restore`, {});
   }
+
+  getActive(): Observable<Note[]> {
+    return this.http.get<Note[]>(`${this.baseUrl}/active`);
+  }
+
 }

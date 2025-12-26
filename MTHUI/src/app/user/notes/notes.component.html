@@ -1,6 +1,41 @@
-<h2>Available Notes</h2>
-<ul>
-  <li *ngFor="let note of notes" (click)="viewDetails(note.id)">
-    {{ note.title }} - ${{ note.price }}
-  </li>
-</ul>
+<div class="container mt-4">
+
+  <h2 class="mb-3">Available Notes</h2>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center">
+    Loading notes...
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && notes.length === 0" class="text-muted">
+    No notes available right now.
+  </div>
+
+  <!-- Notes Grid -->
+  <div class="row" *ngIf="!loading && notes.length > 0">
+    <div class="col-md-4 mb-3" *ngFor="let note of notes">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+
+          <h5 class="card-title">{{ note.title }}</h5>
+
+          <p class="card-text text-truncate">
+            {{ note.description || 'No description available' }}
+          </p>
+
+          <div class="mt-auto">
+            <p class="fw-bold mb-2">₹ {{ note.price }}</p>
+
+            <button class="btn btn-outline-primary w-100"
+                    (click)="viewNote(note.id)">
+              View Details
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -22,12 +22,25 @@ namespace MTHAPI.Controllers
             return Ok(_unitOfWork.Notes.GetAll());
         }
 
+        [HttpGet("active")]
+        public IActionResult GetActiveNotes()
+        {
+            var notes = _unitOfWork.Notes
+                .GetAll()
+                .Where(n => !n.IsDeleted)
+                .ToList();
+
+            return Ok(notes);
+        }
+
         // GET: api/notes/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
             var note = _unitOfWork.Notes.GetById(id);
-            if (note == null) return NotFound();
+            if (note == null || note.IsDeleted) 
+                return NotFound();
+
             return Ok(note);
         }
 
@@ -97,6 +110,8 @@ namespace MTHAPI.Controllers
 
             return NoContent();
         }
+
+        
 
     }
 }

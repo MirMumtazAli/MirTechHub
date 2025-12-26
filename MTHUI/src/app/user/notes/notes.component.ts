@@ -1,25 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Note } from '../../core/models/note';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NoteService } from '../../core/services/note.service';
-
+import { Note } from '../../core/models/note';
 
 @Component({
   selector: 'app-notes',
-  templateUrl: './notes.component.html',
   standalone: true,
-  imports: [RouterModule], // needed for routerLink in template
+  imports: [CommonModule],
+  templateUrl: './notes.component.html'
 })
 export class NotesComponent implements OnInit {
-  notes: Note[] = [];
 
-  constructor(private noteService: NoteService, private router: Router) { }
+  notes: Note[] = [];
+  loading = true;
+
+  constructor(
+    private noteService: NoteService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.noteService.getAll().subscribe(data => this.notes = data);
+    this.noteService.getActive().subscribe({
+      next: res => {
+        // Extra safety in case backend changes
+        this.notes = res.filter(n => !n.isDeleted);
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
   }
 
-  viewDetails(id: number) {
-    this.router.navigate(['/note-detail', id]);
+  viewNote(id: number): void {
+    this.router.navigate(['/notes', id]);
   }
 }

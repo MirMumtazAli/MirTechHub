@@ -1,11 +1,33 @@
-<div *ngIf="note as n; else loading">
-  <h2>{{ n.title }}</h2>
-  <p>{{ n.content }}</p>
-  <p>Price: ${{ n.price }}</p>
-  <p>Author: {{ n.author }}</p>
-  <p>Created At: {{ n.createdAt | date:'medium' }}</p>
-</div>
+<div class="container mt-4">
 
-<ng-template #loading>
-  <p>Loading note details...</p>
-</ng-template>
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center">
+    Loading note...
+  </div>
+
+  <!-- Note Details -->
+  <div *ngIf="!loading && note" class="card">
+    <div class="card-body">
+
+      <h3 class="card-title">{{ note.title }}</h3>
+
+      <p class="text-muted">
+        {{ note.description || 'No description available' }}
+      </p>
+
+      <hr>
+
+      <div class="mb-4">
+        {{ note.content }}
+      </div>
+
+      <h5 class="mb-3">Price: ₹ {{ note.price }}</h5>
+
+      <button class="btn btn-success" (click)="buyNow()">
+        Buy Now
+      </button>
+
+    </div>
+  </div>
+
+</div>
