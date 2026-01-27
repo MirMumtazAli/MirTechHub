@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MTHAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e38ff953090b86f7ea58b6d0b5c644ff8fe3952")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2953c76e3aefdc4055a320df30c530095897345f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MTHAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MTHAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

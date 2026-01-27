@@ -1,5 +1,13 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Visual Studio (IMPORTANT)
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.vsidx
+
 # Compiled output
 /dist
 /tmp
