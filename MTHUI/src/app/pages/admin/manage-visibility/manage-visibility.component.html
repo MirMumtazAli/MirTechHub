@@ -1,0 +1,69 @@
+
+<div class="bg-white shadow-xl rounded-lg p-6 md:p-8 border border-slate-200 max-w-2xl mx-auto">
+  <div class="border-b pb-4 mb-6">
+    <h1 class="text-3xl font-bold text-slate-800">Site Settings</h1>
+    <p class="text-slate-500 mt-1">Control which pages are visible to your users.</p>
+  </div>
+
+  <div class="space-y-6">
+    <!-- Notes Page Toggle -->
+    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+      <div>
+        <h3 class="font-semibold text-slate-800">Notes Page</h3>
+        <p class="text-sm text-slate-500">Show or hide the "Notes" page from all users.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" [checked]="pageVisibilityService.noteVisible()" (change)="pageVisibilityService.toggleNoteVisibility()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- Software Page Toggle -->
+    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+      <div>
+        <h3 class="font-semibold text-slate-800">Software Page</h3>
+        <p class="text-sm text-slate-500">Show or hide the "Software" page from all users.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" [checked]="pageVisibilityService.softwareVisible()" (change)="pageVisibilityService.toggleSoftwareVisibility()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- Blog Page Toggle -->
+    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+      <div>
+        <h3 class="font-semibold text-slate-800">Blog Page</h3>
+        <p class="text-sm text-slate-500">Show or hide the "Blog" page from all users.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" [checked]="pageVisibilityService.blogVisible()" (change)="pageVisibilityService.toggleBlogVisibility()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- Portfolio Page Toggle -->
+    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+      <div>
+        <h3 class="font-semibold text-slate-800">Portfolio Page</h3>
+        <p class="text-sm text-slate-500">Show or hide the "Portfolio" page from all users.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" [checked]="pageVisibilityService.portfolioVisible()" (change)="pageVisibilityService.togglePortfolioVisibility()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- Reviews Section Toggle -->
+    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
+      <div>
+        <h3 class="font-semibold text-slate-800">Reviews & Comments</h3>
+        <p class="text-sm text-slate-500">Show or hide all review sections across the site.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" [checked]="pageVisibilityService.reviewsVisible()" (change)="pageVisibilityService.toggleReviewsVisibility()">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+</div>

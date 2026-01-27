@@ -1,0 +1,58 @@
+<div class="bg-white shadow-xl rounded-lg p-6 md:p-8 max-w-4xl mx-auto border border-slate-200">
+  <h1 class="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Your Orders</h1>
+  <div class="space-y-6">
+    @for(order of orders(); track order.id) {
+      <div class="border border-slate-200 rounded-lg p-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-semibold text-lg text-slate-800">Order #{{ order.id }}</p>
+            <p class="text-sm text-slate-500">Placed on {{ order.date | date:'longDate' }}</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="px-3 py-1 text-xs font-semibold rounded-full"
+                  [class.bg-black]="order.status === 'Completed'" [class.text-white]="order.status === 'Completed'"
+                  [class.bg-gray-200]="order.status === 'Processing'" [class.text-gray-800]="order.status === 'Processing'"
+                  [class.bg-gray-100]="order.status === 'Pending'" [class.text-gray-700]="order.status === 'Pending'"
+                  [class.bg-gray-100]="order.status === 'Cancelled'" [class.text-gray-500]="order.status === 'Cancelled'">
+              {{ order.status }}
+            </span>
+            @if (order.status === 'Pending') {
+              <button (click)="requestCancelOrder(order)" class="text-xs font-medium text-red-600 hover:text-red-800 hover:underline">Cancel Order</button>
+            }
+          </div>
+        </div>
+        <div class="mt-4 border-t pt-4">
+          <ul class="space-y-2">
+            @for(item of order.items; track item.productId) {
+              <li class="flex justify-between items-center text-sm">
+                <div class="flex-grow">
+                  <span class="text-slate-600">{{ item.name }}</span>
+                  @if(item.type.toLowerCase() === 'note' && order.status === 'Completed') {
+                    <button (click)="sendNoteByEmail(item)" class="ml-4 text-xs text-gray-600 hover:underline">(Send to Email)</button>
+                  }
+                </div>
+                <span class="font-medium text-slate-800">{{ item.price | currency }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+        <div class="text-right mt-4 pt-2 border-t font-bold text-lg text-slate-800">
+          Total: {{ order.total | currency }}
+        </div>
+      </div>
+    } @empty {
+      <p class="text-center text-slate-500 py-8">You have not placed any orders yet.</p>
+    }
+  </div>
+</div>
+
+@if (isCancelModalOpen() && orderToCancel()) {
+  <app-confirm-delete
+    [itemName]="'Order #' + orderToCancel()!.id"
+    title="Cancel Order"
+    message="Are you sure you want to cancel this order? This can only be done while the order is pending."
+    confirmText="Yes, Cancel Order"
+    (confirm)="handleConfirmCancel()"
+    (cancel)="handleCancelClose()">
+  </app-confirm-delete>
+}

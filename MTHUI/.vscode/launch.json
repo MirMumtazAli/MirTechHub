@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "localhost (Chrome)",
+      "url": "http://localhost:59248",
+      "webRoot": "${workspaceFolder}",
+      "runtimeExecutable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    },
+    {
+      "type": "edge",
+      "request": "launch",
+      "name": "localhost (Edge)",
+      "url": "http://localhost:59248",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}

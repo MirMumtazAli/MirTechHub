@@ -1,0 +1,19 @@
+@if (product()) {
+<a [routerLink]="['/', product().type.toLowerCase(), product().id]" class="group block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col border border-slate-200">
+  <img [src]="product().imageUrl" [alt]="product().name" class="w-full h-48 object-cover">
+  <div class="p-6 flex flex-col flex-grow">
+    <h3 class="text-lg font-bold mb-2 text-slate-800">{{ product().name }}</h3>
+    <p class="text-slate-600 text-sm mb-4 flex-grow">{{ product().description }}</p>
+    <div class="flex justify-between items-center mt-auto pt-4 border-t border-slate-100">
+      @if (product().price > 0) {
+      <span class="text-xl font-bold text-gray-800">{{ product().price | currency }}</span>
+      } @else {
+      <span class="text-xl font-bold text-slate-800">Free</span>
+      }
+      <button (click)="$event.preventDefault(); $event.stopPropagation(); addToCart()" class="px-4 py-2 bg-black text-white text-sm font-semibold rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-300">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</a>
+}

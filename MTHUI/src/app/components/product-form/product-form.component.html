@@ -1,0 +1,99 @@
+
+<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6 sm:p-8 overflow-y-auto max-h-[90vh] md:max-h-[85vh]" (click)="$event.stopPropagation()">
+  <h2 class="text-2xl font-bold text-slate-800 mb-4 capitalize">
+    {{ product() ? 'Edit' : 'Add' }} {{ productType() }}
+  </h2>
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="name" class="block text-sm font-medium text-slate-700">Name</label>
+      <input type="text" id="name" formControlName="name" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm">
+    </div>
+    <div>
+      <label for="description" class="block text-sm font-medium text-slate-700">Short Description / Excerpt</label>
+      <textarea id="description" formControlName="description" rows="2" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"></textarea>
+    </div>
+     <div>
+      <label for="details" class="block text-sm font-medium text-slate-700">Details</label>
+      <div class="mt-1">
+        <div #editor></div>
+      </div>
+    </div>
+    
+    <div>
+      <label for="image" class="block text-sm font-medium text-slate-700">Main Image</label>
+      <div class="mt-2 flex items-center space-x-4">
+        @if(productForm.get('imageUrl')?.value) {
+           <img [src]="productForm.get('imageUrl')?.value" alt="Image preview" class="h-16 w-16 rounded-md object-cover border">
+        }
+        <input type="file" id="image" (change)="onFileSelected($event, 'imageUrl')" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
+      </div>
+      @if(productForm.get('imageUrl')?.value) {
+        <button type="button" (click)="removeImage()" class="text-xs text-red-600 hover:underline mt-1">Remove Image</button>
+      }
+    </div>
+
+    @if(productType() === 'note') {
+      <div class="space-y-2 rounded-md border border-slate-200 p-3">
+        <div class="relative flex items-start">
+          <div class="flex h-6 items-center">
+            <input id="hasPdf" formControlName="hasPdf" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-gray-800 focus:ring-gray-600">
+          </div>
+          <div class="ml-3 text-sm leading-6">
+            <label for="hasPdf" class="font-medium text-slate-900">Has PDF</label>
+            <p class="text-slate-500">Check this to attach a PDF file to this note.</p>
+          </div>
+        </div>
+    
+        @if (productForm.get('hasPdf')?.value) {
+          <div class="pt-2">
+            <label for="pdf" class="sr-only">PDF File</label>
+            <input type="file" id="pdf" (change)="onFileSelected($event, 'pdfUrl')" accept=".pdf" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
+            @if(productForm.get('pdfUrl')?.value) {
+               <p class="text-xs text-green-600 mt-1">A PDF is attached. Uploading a new file will replace it.</p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div class="flex items-center space-x-4">
+        <div class="flex-grow">
+            <label for="price" class="block text-sm font-medium text-slate-700">Price</label>
+            <div class="relative mt-1 rounded-md shadow-sm">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="text-slate-500 sm:text-sm">$</span>
+                </div>
+                <input type="number" id="price" formControlName="price" class="bg-white block w-full rounded-md border-slate-300 pl-7 pr-12 focus:border-gray-500 focus:ring-gray-500 sm:text-sm disabled:bg-slate-50" placeholder="0.00">
+            </div>
+        </div>
+        <div class="pt-6">
+            <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                    <input id="isFree" formControlName="isFree" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-gray-800 focus:ring-gray-600">
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                    <label for="isFree" class="font-medium text-slate-900">Free</label>
+                </div>
+            </div>
+        </div>
+        <div class="pt-6">
+            <div class="relative flex items-start">
+                <div class="flex h-6 items-center">
+                    <input id="isFeatured" formControlName="isFeatured" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-gray-800 focus:ring-gray-600">
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                    <label for="isFeatured" class="font-medium text-slate-900">Featured</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-end space-x-3 pt-4 border-t mt-6">
+      <button type="button" (click)="onCancel()" class="px-4 py-2 text-sm font-semibold bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="productForm.invalid" class="px-4 py-2 text-sm font-semibold bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-slate-400">
+        Save {{ productType() }}
+      </button>
+    </div>
+  </form>
+</div>

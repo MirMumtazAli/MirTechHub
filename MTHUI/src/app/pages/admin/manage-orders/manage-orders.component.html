@@ -1,0 +1,54 @@
+
+<div class="bg-white shadow-xl rounded-lg p-6 md:p-8 border border-slate-200">
+  <h1 class="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Manage Orders</h1>
+  <div class="space-y-6">
+    @for(order of paginatedOrders(); track order.id) {
+      <div class="border border-slate-200 rounded-lg p-4">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+          <div>
+            <p class="font-semibold text-lg text-slate-800">Order #{{ order.id }}</p>
+            <p class="text-sm text-slate-500">Placed on {{ order.date | date:'longDate' }}</p>
+            <p class="text-sm text-slate-500">User: <span class="font-medium">{{ order.user.name }} (ID: {{ order.user.id }})</span></p>
+          </div>
+          <div class="flex items-center space-x-2 self-start sm:self-center">
+            <span class="px-3 py-1 text-xs font-semibold rounded-full"
+                  [class.bg-black]="order.status === 'Completed'" [class.text-white]="order.status === 'Completed'"
+                  [class.bg-gray-200]="order.status === 'Processing'" [class.text-gray-800]="order.status === 'Processing'"
+                  [class.bg-gray-100]="order.status === 'Pending'" [class.text-gray-700]="order.status === 'Pending'"
+                  [class.bg-gray-100]="order.status === 'Cancelled'" [class.text-gray-500]="order.status === 'Cancelled'">
+              {{ order.status }}
+            </span>
+            <select [value]="order.status" (change)="onStatusChange(order, $event)" class="text-sm rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500">
+              @for(status of orderStatuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="mt-4 border-t pt-4">
+           <h4 class="font-medium text-slate-700 mb-2">Items</h4>
+           <ul class="space-y-2">
+             @for(item of order.items; track item.productId) {
+             <li class="flex justify-between items-center text-sm">
+               <span class="text-slate-600">{{ item.name }}</span>
+               <span class="font-medium text-slate-800">{{ item.price | currency }}</span>
+             </li>
+             }
+           </ul>
+        </div>
+        <div class="text-right mt-4 pt-2 border-t font-bold text-lg text-slate-800">
+          Total: {{ order.total | currency }}
+        </div>
+      </div>
+    } @empty {
+      <p class="text-center text-slate-500 py-8">No orders have been placed yet.</p>
+    }
+  </div>
+  <app-pagination
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [totalItems]="totalItems()"
+    [itemsPerPage]="itemsPerPage()"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</div>

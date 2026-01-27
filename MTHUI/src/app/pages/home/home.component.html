@@ -1,0 +1,63 @@
+
+<div class="space-y-16">
+  <!-- Hero Section -->
+  <section class="text-center bg-white py-20 px-6 rounded-xl shadow-sm border border-slate-200">
+    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+      <span class="block">Unlock Your Potential with</span>
+      <span class="block text-black mt-2">Digital Grove</span>
+    </h1>
+    <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-500">
+      High-quality digital notes, powerful mini-software, and insightful articles to accelerate your growth.
+    </p>
+    <div class="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+      @if(pageVisibilityService.noteVisible()) {
+      <a routerLink="/note" class="w-full sm:w-auto px-8 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-transform hover:scale-105">Explore Notes</a>
+      }
+      @if(pageVisibilityService.softwareVisible()) {
+      <a routerLink="/software" class="w-full sm:w-auto px-8 py-3 bg-slate-800 text-white font-semibold rounded-md hover:bg-slate-900 transition-transform hover:scale-105">Discover Software</a>
+      }
+    </div>
+  </section>
+
+  <!-- Featured Notes -->
+  @if(pageVisibilityService.noteVisible() && featuredNotes().length > 0) {
+  <section>
+    <h2 class="text-3xl font-bold text-center mb-8">Featured Notes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for(product of featuredNotes(); track product.id) {
+      <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- Featured Software -->
+  @if(pageVisibilityService.softwareVisible() && featuredSoftware().length > 0) {
+  <section>
+    <h2 class="text-3xl font-bold text-center mb-8">Featured Software</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for(product of featuredSoftware(); track product.id) {
+      <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- Featured Blog Posts -->
+  @if(pageVisibilityService.blogVisible() && featuredPosts().length > 0) {
+  <section>
+    <h2 class="text-3xl font-bold text-center mb-8">Featured Blog Posts</h2>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      @for(post of featuredPosts(); track post.id) {
+      <a [routerLink]="['/blog', post.id]" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-slate-200">
+        <h3 class="text-xl font-bold mb-2 text-slate-800">{{ post.title }}</h3>
+        <p class="text-slate-600 mb-4">{{ post.excerpt }}</p>
+        <div class="text-sm font-medium text-gray-800">Read More &rarr;</div>
+      </a>
+      } @empty {
+      <p class="text-center text-slate-500 md:col-span-2">No featured posts at the moment. Check back later!</p>
+      }
+    </div>
+  </section>
+  }
+</div>

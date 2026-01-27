@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="DAL/DAL.csproj" />
+  <Project Path="MTHAPI/MTHAPI.csproj" Id="80c3575a-c811-4cdc-8329-ef31530cf011" />
+  <Project Path="MTHUI/MTHUI.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>

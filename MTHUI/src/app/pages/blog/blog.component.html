@@ -1,0 +1,44 @@
+
+<div class="max-w-4xl mx-auto">
+  <header class="text-center mb-12">
+    <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      <span class="block">From the</span>
+      <span class="block text-gray-800">Digital Grove Blog</span>
+    </h1>
+    <p class="mt-3 max-w-md mx-auto text-base text-slate-500 sm:text-lg md:mt-5">
+      Insights, tutorials, and news from our team of experts.
+    </p>
+  </header>
+
+  <div class="mb-8">
+    <input 
+      type="text" 
+      placeholder="Search articles by title or content..."
+      [value]="searchTerm()"
+      (input)="onSearch($event)"
+      class="bg-white w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+    >
+  </div>
+
+  <div class="space-y-12">
+    @for(post of posts(); track post.id) {
+      <a [routerLink]="['/blog', post.id]" class="group block">
+        <article class="grid md:grid-cols-3 gap-8 items-center">
+          <div class="md:col-span-1">
+            <img [src]="post.imageUrl" [alt]="post.title" class="rounded-lg object-cover w-full h-full shadow-md group-hover:shadow-xl transition-shadow duration-300">
+          </div>
+          <div class="md:col-span-2">
+            <p class="text-sm text-slate-500">{{ post.date }} &middot; By {{ post.author }}</p>
+            <h2 class="text-2xl font-bold mt-2 text-slate-800 group-hover:text-black transition-colors duration-300">
+              {{ post.title }}
+            </h2>
+            <p class="text-slate-600 mt-2">{{ post.excerpt }}</p>
+            <div class="mt-4 text-sm font-semibold text-gray-800 group-hover:underline">Read Article &rarr;</div>
+          </div>
+        </article>
+      </a>
+    } @empty {
+      <p class="text-center text-slate-500 py-8">No posts found matching your search.</p>
+    }
+  </div>
+</div>

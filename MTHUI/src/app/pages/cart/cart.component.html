@@ -1,0 +1,51 @@
+
+<div class="bg-white shadow-xl rounded-lg p-6 md:p-8 max-w-4xl mx-auto border border-slate-200">
+  <h1 class="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Your Shopping Cart</h1>
+
+  @if (cartItems().length > 0) {
+    <div class="flow-root">
+      <ul role="list" class="-my-6 divide-y divide-slate-200">
+        @for(item of cartItems(); track item.id) {
+          <li class="flex py-6">
+            <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-slate-200">
+              <img [src]="item.imageUrl" [alt]="item.name" class="h-full w-full object-cover object-center">
+            </div>
+            <div class="ml-4 flex flex-1 flex-col">
+              <div>
+                <div class="flex justify-between text-base font-medium text-slate-900">
+                  <h3>{{ item.name }}</h3>
+                  <p class="ml-4">{{ item.price > 0 ? (item.price | currency) : 'Free' }}</p>
+                </div>
+                <p class="mt-1 text-sm text-slate-500 capitalize">{{ item.type }}</p>
+              </div>
+              <div class="flex flex-1 items-end justify-between text-sm">
+                  <p class="text-slate-500">Qty 1</p>
+                  <div class="flex">
+                    <button (click)="removeItem(item)" type="button" class="font-medium text-gray-700 hover:text-black">Remove</button>
+                  </div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+    <div class="border-t border-slate-200 px-4 py-6 sm:px-6 mt-6">
+      <div class="flex justify-between text-lg font-medium text-slate-900">
+        <p>Subtotal</p>
+        <p>{{ totalPrice() | currency }}</p>
+      </div>
+      <p class="mt-0.5 text-sm text-slate-500">Shipping and taxes are not applicable for digital goods.</p>
+      <div class="mt-6">
+        <button (click)="checkout()" class="w-full flex items-center justify-center rounded-md border border-transparent bg-black px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-gray-800">Checkout</button>
+      </div>
+    </div>
+  } @else {
+    <div class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c.51 0 .962-.343 1.087-.835l1.838-5.514A1.875 1.875 0 0018.064 5.25H5.482L5.09 3.515A1.875 1.875 0 003.232 2.25H2.25M9 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-slate-900">Your cart is empty</h3>
+      <p class="mt-1 text-sm text-slate-500">Looks like you haven't added anything to your cart yet.</p>
+    </div>
+  }
+</div>

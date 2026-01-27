@@ -1,0 +1,145 @@
+<header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200">
+  <nav class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+    <a routerLink="/" class="text-2xl font-extrabold text-slate-800 hover:text-black transition-colors">
+      Digital Grove
+    </a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a routerLink="/" routerLinkActive="text-black font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Home</a>
+      @if(pageVisibilityService.noteVisible()) {
+      <a routerLink="/note" routerLinkActive="text-black font-semibold" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Notes</a>
+      }
+      @if(pageVisibilityService.softwareVisible()) {
+      <a routerLink="/software" routerLinkActive="text-black font-semibold" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Software</a>
+      }
+      @if(pageVisibilityService.blogVisible()) {
+      <a routerLink="/blog" routerLinkActive="text-black font-semibold" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Blog</a>
+      }
+      @if(pageVisibilityService.portfolioVisible()) {
+      <a routerLink="/portfolio" routerLinkActive="text-black font-semibold" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Portfolio</a>
+      }
+    </div>
+    <div class="flex items-center space-x-4">
+      <!-- Desktop User/Admin Controls -->
+      <div class="hidden md:flex items-center space-x-4">
+        @if (currentUser()) {
+        @if (isAdmin()) {
+        <div class="relative">
+          <button (click)="toggleAdminMenu()" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-slate-100 text-slate-800 rounded-md hover:bg-slate-200 transition-colors duration-300">
+            <span>Admin</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          @if(isAdminMenuOpen()) {
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-slate-200 z-50">
+            <a routerLink="/admin/notes" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Notes</a>
+            <a routerLink="/admin/software" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Software</a>
+            <a routerLink="/admin/blogs" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Blogs</a>
+            <a routerLink="/admin/orders" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Orders</a>
+            <a routerLink="/admin/reviews" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Reviews</a>
+            <a routerLink="/admin/settings" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Settings</a>
+          </div>
+          }
+        </div>
+        } @else {
+        <a routerLink="/cart" class="relative text-slate-600 hover:text-black transition-colors duration-300 p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          @if (cartItemCount() > 0) {
+          <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{{ cartItemCount() }}</span>
+          }
+        </a>
+        }
+
+        <!-- NEW User dropdown for ALL logged-in users -->
+        <div class="relative">
+          <button (click)="toggleUserMenu()" class="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-slate-100 text-slate-800 rounded-md hover:bg-slate-200 transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" /></svg>
+            <span>{{ currentUser()!.name }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+          </button>
+          @if(isUserMenuOpen()) {
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-slate-200 z-50">
+            @if (!isAdmin()) {
+            <a routerLink="/orders" (click)="toggleUserMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">My Orders</a>
+            }
+            <a routerLink="/account" (click)="toggleUserMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Account Settings</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <button (click)="authService.logout()" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Logout</button>
+          </div>
+          }
+        </div>
+        } @else {
+        <a routerLink="/login" class="px-4 py-2 text-sm font-semibold bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-300">
+          Login
+        </a>
+        }
+      </div>
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button (click)="toggleMobileMenu()" class="text-slate-600 hover:text-black">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  @if(isMobileMenuOpen()) {
+  <div class="md:hidden bg-white shadow-lg absolute top-full left-0 w-full" (click)="toggleMobileMenu()">
+    <div class="container mx-auto px-4 py-4 space-y-4">
+      <a routerLink="/" routerLinkActive="text-black font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="block text-slate-600 hover:text-black font-medium">Home</a>
+      @if(pageVisibilityService.noteVisible()) {
+      <a routerLink="/note" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Notes</a>
+      }
+      @if(pageVisibilityService.softwareVisible()) {
+      <a routerLink="/software" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Software</a>
+      }
+      @if(pageVisibilityService.blogVisible()) {
+      <a routerLink="/blog" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Blog</a>
+      }
+      @if(pageVisibilityService.portfolioVisible()) {
+      <a routerLink="/portfolio" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Portfolio</a>
+      }
+      <hr />
+      @if (currentUser()) {
+      @if (isAdmin()) {
+      <div class="space-y-2">
+        <button (click)="$event.stopPropagation(); toggleMobileAdminMenu()" class="w-full flex justify-between items-center py-2 font-bold text-slate-800">
+          <span>Admin Menu</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 transition-transform" [class.rotate-180]="isMobileAdminMenuOpen()">
+            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        @if(isMobileAdminMenuOpen()) {
+        <div class="pl-4 space-y-3 pt-2" (click)="$event.stopPropagation()">
+          <a routerLink="/admin/notes" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Notes</a>
+          <a routerLink="/admin/software" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Software</a>
+          <a routerLink="/admin/blogs" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Blogs</a>
+          <a routerLink="/admin/orders" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Orders</a>
+          <a routerLink="/admin/reviews" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Reviews</a>
+          <a routerLink="/admin/settings" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Settings</a>
+        </div>
+        }
+      </div>
+      } @else {
+      <a routerLink="/orders" class="block text-slate-600 hover:text-black">My Orders</a>
+      <a routerLink="/cart" class="block text-slate-600 hover:text-black">My Cart</a>
+      }
+      <a routerLink="/account" class="block text-slate-600 hover:text-black">Account Settings</a>
+      <hr />
+      <button (click)="authService.logout()" class="w-full text-left px-4 py-2 text-sm font-semibold bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300">
+        Logout
+      </button>
+      } @else {
+      <a routerLink="/login" class="block px-4 py-2 text-sm font-semibold bg-black text-white rounded-md hover:bg-gray-800">
+        Login
+      </a>
+      }
+    </div>
+  </div>
+  }
+</header>

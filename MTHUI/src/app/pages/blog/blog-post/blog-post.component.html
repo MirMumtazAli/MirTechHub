@@ -1,0 +1,96 @@
+
+@if (post$ | async; as post) {
+  <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-md border border-slate-200">
+    <a routerLink="/blog" class="text-sm font-semibold text-gray-700 hover:underline mb-4 inline-block">&larr; Back to Blog</a>
+    <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">{{ post.title }}</h1>
+    <p class="text-slate-500 mt-2">By {{ post.author }} on {{ post.date }}</p>
+    <img [src]="post.imageUrl" [alt]="post.title" class="w-full h-48 object-cover rounded-lg my-8">
+    <div class="prose prose-lg max-w-none prose-slate" [innerHTML]="post.content"></div>
+
+    <!-- Comments Section -->
+    @if(pageVisibilityService.reviewsVisible()) {
+      <div class="mt-12 border-t border-slate-200 pt-8">
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">Comments</h2>
+        
+        <!-- Existing Comments -->
+        <div class="space-y-6">
+          @for(comment of comments(); track comment.id) {
+            <div class="flex space-x-4">
+              <div class="flex-shrink-0">
+                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">
+                  {{ comment.authorName.charAt(0) }}
+                </div>
+              </div>
+              <div class="flex-grow">
+                 @if(editingReviewId() === comment.id) {
+                   <form [formGroup]="editCommentForm" (ngSubmit)="saveEdit(comment.id)" class="space-y-2">
+                      <textarea formControlName="comment" rows="3" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-800 focus:ring-2 focus:ring-gray-800 sm:text-sm"></textarea>
+                      <div class="flex items-center space-x-2">
+                        <button type="submit" [disabled]="editCommentForm.invalid" class="px-3 py-1 bg-black text-white text-xs font-semibold rounded-md hover:bg-gray-800 disabled:bg-slate-400">Save</button>
+                        <button type="button" (click)="cancelEdit()" class="px-3 py-1 bg-slate-200 text-slate-800 text-xs font-semibold rounded-md hover:bg-slate-300">Cancel</button>
+                      </div>
+                   </form>
+                } @else {
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="font-semibold text-slate-800">{{ comment.authorName }}</p>
+                      <p class="text-sm text-slate-500">{{ comment.date | date:'longDate' }}</p>
+                    </div>
+                     @if(authService.currentUser()?.id === comment.authorId) {
+                      <div class="flex items-center space-x-3">
+                        <button (click)="startEdit(comment)" class="text-xs font-medium text-slate-600 hover:text-black">Edit</button>
+                        <button (click)="onDeleteReview(comment)" class="text-xs font-medium text-red-600 hover:text-red-800">Delete</button>
+                      </div>
+                    }
+                  </div>
+                  <p class="mt-2 text-slate-700">{{ comment.comment }}</p>
+                }
+              </div>
+            </div>
+          } @empty {
+            <p class="text-slate-500">No comments yet. Be the first to share your thoughts!</p>
+          }
+        </div>
+
+        <!-- Comment Form -->
+        @if(authService.currentUser()) {
+          <div class="mt-8 border-t border-slate-200 pt-8">
+            @if (commentSubmitted()) {
+              <div class="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg text-center">
+                <p class="font-semibold">Thank you for your comment!</p>
+              </div>
+            } @else {
+              <h3 class="text-xl font-bold text-slate-800 mb-4">Leave a Comment</h3>
+              <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="space-y-4">
+                <div>
+                  <label for="blog-comment" class="sr-only">Your Comment</label>
+                  <textarea id="blog-comment" formControlName="comment" rows="4" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm" placeholder="Join the discussion..."></textarea>
+                  @if (commentForm.get('comment')?.invalid && commentForm.get('comment')?.touched) {
+                    <p class="mt-1 text-xs text-red-600">A comment of at least 5 characters is required.</p>
+                  }
+                </div>
+                <div>
+                  <button type="submit" [disabled]="commentForm.invalid" class="px-6 py-2 bg-black text-white text-sm font-semibold rounded-md hover:bg-gray-800 disabled:bg-slate-400">Post Comment</button>
+                </div>
+              </form>
+            }
+          </div>
+        } @else {
+            <p class="mt-8 border-t border-slate-200 pt-8 text-slate-600">
+                <a routerLink="/login" class="font-semibold text-gray-800 hover:underline">Log in</a> to join the conversation.
+            </p>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <p class="text-center text-slate-500">Post not found.</p>
+}
+
+@if (isDeleteModalOpen() && reviewToDelete()) {
+  <app-confirm-delete
+    [itemName]="'your comment'"
+    (confirm)="handleConfirmDelete()"
+    (cancel)="handleCancelDelete()">
+  </app-confirm-delete>
+}

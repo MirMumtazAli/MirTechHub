@@ -1,0 +1,18 @@
+
+<div class="space-y-12">
+  <header class="text-center">
+    <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+      <span class="block">Powerful</span>
+      <span class="block text-gray-800">Mini Software</span>
+    </h1>
+    <p class="mt-3 max-w-md mx-auto text-base text-slate-500 sm:text-lg md:mt-5 md:text-xl">
+      Boost your productivity with our lightweight and efficient software utilities.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    @for (item of software(); track item.id) {
+      <app-product-card [product]="item"></app-product-card>
+    }
+  </div>
+</div>

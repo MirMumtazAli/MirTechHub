@@ -1,0 +1,63 @@
+
+<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6 sm:p-8 overflow-y-auto max-h-[90vh] md:max-h-[85vh]" (click)="$event.stopPropagation()">
+  <h2 class="text-2xl font-bold text-slate-800 mb-4 capitalize">
+    {{ post() ? 'Edit' : 'Add' }} Blog Post
+  </h2>
+  <form [formGroup]="blogForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="title" class="block text-sm font-medium text-slate-700">Title</label>
+      <input type="text" id="title" formControlName="title" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm">
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="author" class="block text-sm font-medium text-slate-700">Author</label>
+        <input type="text" id="author" formControlName="author" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm">
+      </div>
+      <div>
+        <label for="date" class="block text-sm font-medium text-slate-700">Date</label>
+        <input type="text" id="date" formControlName="date" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm">
+      </div>
+    </div>
+     <div>
+      <label for="image" class="block text-sm font-medium text-slate-700">Featured Image</label>
+      <div class="mt-2 flex items-center space-x-4">
+        @if(blogForm.get('imageUrl')?.value) {
+           <img [src]="blogForm.get('imageUrl')?.value" alt="Image preview" class="h-16 w-16 rounded-md object-cover border">
+        }
+        <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
+      </div>
+       @if(blogForm.get('imageUrl')?.value) {
+        <button type="button" (click)="removeImage()" class="text-xs text-red-600 hover:underline mt-1">Remove Image</button>
+      }
+    </div>
+    <div>
+      <label for="excerpt" class="block text-sm font-medium text-slate-700">Excerpt</label>
+      <textarea id="excerpt" formControlName="excerpt" rows="2" class="bg-white mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"></textarea>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-slate-700">Content</label>
+      <div class="mt-1">
+        <div #editor></div>
+      </div>
+    </div>
+    <div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input id="isFeatured" formControlName="isFeatured" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-gray-800 focus:ring-gray-600">
+            </div>
+            <div class="ml-3 text-sm leading-6">
+                <label for="isFeatured" class="font-medium text-slate-900">Feature this post</label>
+                <p class="text-slate-500">Featured posts will appear on the home page.</p>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-end space-x-3 pt-4 border-t mt-6">
+      <button type="button" (click)="onCancel()" class="px-4 py-2 text-sm font-semibold bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300">
+        Cancel
+      </button>
+      <button type="submit" [disabled]="blogForm.invalid" class="px-4 py-2 text-sm font-semibold bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-slate-400">
+        Save Post
+      </button>
+    </div>
+  </form>
+</div>
