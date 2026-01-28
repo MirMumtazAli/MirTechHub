@@ -37,6 +37,7 @@ public class OrdersRepository : IOrdersRepository
     {
         return await _context.Orders
             .Where(o => o.UserId == userId)
+            .Include(o => o.User)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
             .OrderByDescending(o => o.Date)

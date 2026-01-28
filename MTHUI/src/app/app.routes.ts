@@ -23,7 +23,7 @@ const adminGuard: CanActivateFn = () => {
   return router.parseUrl('/');
 };
 
-const pageVisibilityGuard = (page: 'note' | 'software' | 'blog' | 'portfolio'): CanActivateFn => {
+const pageVisibilityGuard = (page: 'note' | 'software' | 'blog'): CanActivateFn => {
   return () => {
 
     const visibilityService = inject(PageVisibilityService);
@@ -76,11 +76,6 @@ export const APP_ROUTES: Routes = [
     path: 'blog/:id',
     canActivate: [pageVisibilityGuard('blog')],
     loadComponent: () => import('./pages/blog/blog-post/blog-post.component').then(m => m.BlogPostComponent)
-  },
-  {
-    path: 'portfolio',
-    canActivate: [pageVisibilityGuard('portfolio')],
-    loadComponent: () => import('./pages/portfolio/portfolio.component').then(m => m.PortfolioComponent)
   },
   {
     path: 'login',

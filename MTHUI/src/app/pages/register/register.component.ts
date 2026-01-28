@@ -24,10 +24,13 @@ export function passwordsMatchValidator(control: AbstractControl): ValidationErr
 })
 export class RegisterComponent {
   private authService = inject(AuthService);
-  private router = inject(Router);
-  private fb = inject(FormBuilder);
+  // FIX: Add explicit type to 'router' to prevent it from being inferred as 'unknown'.
+  private router: Router = inject(Router);
+  private fb: FormBuilder = inject(FormBuilder);
 
   registrationSuccess = signal(false);
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
 
   registerForm = this.fb.group({
     name: ['', Validators.required],

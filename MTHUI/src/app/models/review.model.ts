@@ -1,4 +1,3 @@
-
 export interface Review {
   id: number;
   relatedId: string | number; // Product ID or Blog Post ID
@@ -9,4 +8,6 @@ export interface Review {
   comment: string;
   date: Date;
   isVisible: boolean;
+  parentId?: number;
+  replies?: Review[];
 }

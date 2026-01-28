@@ -1,4 +1,3 @@
-
 import { Review } from '../review.model';
 
 // DTO for fetching reviews
@@ -10,6 +9,7 @@ export interface ReviewCreateDto {
   type: 'product' | 'blog';
   rating?: number;
   comment: string;
+  parentId?: number;
 }
 
 // DTO for updating an existing review or comment

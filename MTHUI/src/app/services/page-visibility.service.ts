@@ -7,6 +7,7 @@ type PageVisibilityState = {
   blog: boolean;
   portfolio: boolean;
   reviews: boolean;
+  changePassword: boolean;
 };
 
 @Injectable({
@@ -37,6 +38,7 @@ export class PageVisibilityService {
       blog: true,
       portfolio: true,
       reviews: true,
+      changePassword: true,
     };
   }
 
@@ -46,6 +48,7 @@ export class PageVisibilityService {
   readonly blogVisible = signal(this.getInitialState().blog);
   readonly portfolioVisible = signal(this.getInitialState().portfolio);
   readonly reviewsVisible = signal(this.getInitialState().reviews);
+  readonly changePasswordVisible = signal(this.getInitialState().changePassword);
 
   constructor() {
     // Effect to persist any changes to the signals into localStorage
@@ -56,6 +59,7 @@ export class PageVisibilityService {
         blog: this.blogVisible(),
         portfolio: this.portfolioVisible(),
         reviews: this.reviewsVisible(),
+        changePassword: this.changePasswordVisible(),
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(currentState));
     });
@@ -79,6 +83,10 @@ export class PageVisibilityService {
 
   toggleReviewsVisibility() {
     this.reviewsVisible.update(v => !v);
+  }
+
+  toggleChangePasswordVisibility() {
+    this.changePasswordVisible.update(v => !v);
   }
 
   isPageVisible(page: 'note' | 'software' | 'blog' | 'portfolio'): boolean {

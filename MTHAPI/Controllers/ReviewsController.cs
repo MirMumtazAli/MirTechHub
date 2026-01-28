@@ -24,6 +24,14 @@ public class ReviewsController : ControllerBase
         return Ok(reviews);
     }
 
+    [HttpGet("item/{type}/{relatedId}")]
+    [ProducesResponseType(typeof(IEnumerable<ReviewDto>), 200)]
+    public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsForItem(string type, string relatedId)
+    {
+        var reviews = await _reviewService.GetVisibleReviewsByRelatedIdAsync(type, relatedId);
+        return Ok(reviews);
+    }
+
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(ReviewDto), 201)]

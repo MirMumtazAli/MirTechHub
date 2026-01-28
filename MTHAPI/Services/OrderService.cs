@@ -143,4 +143,49 @@ public class OrderService : IOrderService
             }).ToList()
         };
     }
+
+    //private OrderDto MapOrderToDto(Order order)
+    //{
+    //    if (order == null)
+    //    {
+    //        throw new ArgumentNullException(nameof(order), "Order cannot be null");
+    //    }
+
+    //    if (order.User == null)
+    //    {
+    //        throw new InvalidOperationException($"Order {order.Id} has no User loaded");
+    //    }
+
+    //    if (order.OrderItems == null)
+    //    {
+    //        throw new InvalidOperationException($"Order {order.Id} has no OrderItems loaded");
+    //    }
+
+    //    return new OrderDto
+    //    {
+    //        Id = order.Id,
+    //        Date = order.Date,
+    //        Total = order.Total,
+    //        Status = order.Status.ToString(),
+    //        User = new UserSummaryDto
+    //        {
+    //            Id = order.User.Id,
+    //            Name = order.User.Name
+    //        },
+    //        Items = order.OrderItems.Select(oi => {
+    //            if (oi.Product == null)
+    //            {
+    //                throw new InvalidOperationException($"OrderItem for ProductId {oi.ProductId} has no Product loaded");
+    //            }
+    //            return new OrderItemDto
+    //            {
+    //                ProductId = oi.ProductId,
+    //                Name = oi.Product.Name,
+    //                Price = oi.Price,
+    //                Type = oi.Product.Type.ToString(),
+    //                Quantity = oi.Quantity
+    //            };
+    //        }).ToList()
+    //    };
+    //}
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 public interface IReviewService
 {
     Task<IEnumerable<ReviewDto>> GetAllReviewsAsync();
+    Task<IEnumerable<ReviewDto>> GetVisibleReviewsByRelatedIdAsync(string type, string relatedId);
     Task<(ReviewDto? Review, string? Error)> CreateReviewAsync(ReviewCreateDto reviewDto, string authorId);
     Task<(bool Success, string? Error)> UpdateReviewAsync(int reviewId, ReviewUpdateDto reviewDto, string userId, bool isAdmin);
     Task<(bool Success, string? Error)> UpdateReviewVisibilityAsync(int reviewId, bool isVisible);

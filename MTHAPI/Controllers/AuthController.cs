@@ -147,4 +147,30 @@ public class AuthController : ControllerBase
 
         return Ok(userDto);
     }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            return NotFound(new { Message = "User not found" });
+        }
+
+        var result = await _userManager.ChangePasswordAsync(
+            user,
+            dto.OldPassword,      // ⭐ Changed from CurrentPassword
+            dto.NewPassword
+        );
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { Message = "Failed to change password. Please check your current password." });
+        }
+
+        return Ok(new { Message = "Password changed successfully" });
+    }
 }

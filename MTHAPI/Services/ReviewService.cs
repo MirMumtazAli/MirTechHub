@@ -1,4 +1,5 @@
-﻿using DAL.DAO;
+﻿using api.Data;
+using DAL.DAO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,30 @@ using System.Threading.Tasks;
 public class ReviewService : IReviewService
 {
     private readonly IReviewRepository _reviewRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly MTHDbContext _context;
 
-    public ReviewService(IReviewRepository reviewRepository, IUnitOfWork unitOfWork)
+    public ReviewService(IReviewRepository reviewRepository, MTHDbContext context)
     {
         _reviewRepository = reviewRepository;
-        _unitOfWork = unitOfWork;
+        _context = context;
     }
 
     public async Task<IEnumerable<ReviewDto>> GetAllReviewsAsync()
     {
         var reviews = await _reviewRepository.GetAllAsync();
         return reviews.Select(MapReviewToDto);
+    }
+
+    public async Task<IEnumerable<ReviewDto>> GetVisibleReviewsByRelatedIdAsync(string type, string relatedId)
+    {
+        var allReviewsForItem = await _reviewRepository.GetByRelatedIdAsync(type, relatedId);
+        var visibleReviews = allReviewsForItem.Where(r => r.IsVisible).ToList();
+        var reviewMap = visibleReviews.ToLookup(r => r.ParentId);
+
+        return reviewMap[null] // Get top-level reviews
+            .Select(r => MapReviewToDtoRecursive(r, reviewMap))
+            .OrderByDescending(r => r.Date)
+            .ToList();
     }
 
     public async Task<(ReviewDto? Review, string? Error)> CreateReviewAsync(ReviewCreateDto reviewDto, string authorId)
@@ -36,11 +49,12 @@ public class ReviewService : IReviewService
             Rating = reviewDto.Rating,
             Date = DateTime.UtcNow,
             IsVisible = true, // Default to visible
-            AuthorId = authorId
+            AuthorId = authorId,
+            ParentId = reviewDto.ParentId
         };
 
         await _reviewRepository.AddAsync(newReview);
-        await _unitOfWork.CompleteAsync();
+        await _context.SaveChangesAsync();
 
         var completeReview = await _reviewRepository.GetByIdAsync(newReview.Id);
 
@@ -67,7 +81,7 @@ public class ReviewService : IReviewService
         }
 
         _reviewRepository.Update(review);
-        await _unitOfWork.CompleteAsync();
+        await _context.SaveChangesAsync();
         return (true, null);
     }
 
@@ -81,7 +95,7 @@ public class ReviewService : IReviewService
 
         review.IsVisible = isVisible;
         _reviewRepository.Update(review);
-        await _unitOfWork.CompleteAsync();
+        await _context.SaveChangesAsync();
         return (true, null);
     }
 
@@ -99,7 +113,7 @@ public class ReviewService : IReviewService
         }
 
         await _reviewRepository.DeleteAsync(reviewId);
-        await _unitOfWork.CompleteAsync();
+        await _context.SaveChangesAsync();
         return (true, null);
     }
 
@@ -109,13 +123,35 @@ public class ReviewService : IReviewService
         {
             Id = review.Id,
             RelatedId = review.RelatedId,
-            Type = review.Type.ToString(),
+            Type = review.Type,
             AuthorName = review.Author.Name,
             AuthorId = review.AuthorId,
             Rating = review.Rating,
             Comment = review.Comment,
             Date = review.Date,
-            IsVisible = review.IsVisible
+            IsVisible = review.IsVisible,
+            ParentId = review.ParentId
+        };
+    }
+
+    private ReviewDto MapReviewToDtoRecursive(Review review, ILookup<int?, Review> reviewMap)
+    {
+        return new ReviewDto
+        {
+            Id = review.Id,
+            RelatedId = review.RelatedId,
+            Type = review.Type,
+            AuthorName = review.Author.Name,
+            AuthorId = review.AuthorId,
+            Rating = review.Rating,
+            Comment = review.Comment,
+            Date = review.Date,
+            IsVisible = review.IsVisible,
+            ParentId = review.ParentId,
+            Replies = reviewMap[review.Id]
+                .Select(reply => MapReviewToDtoRecursive(reply, reviewMap))
+                .OrderBy(r => r.Date)
+                .ToList()
         };
     }
 }

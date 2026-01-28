@@ -18,5 +18,6 @@ export interface ChangePasswordDto {
   confirmPassword: string;
 }
 
+
 // The user object returned from the API after login/auth check
 export type UserDto = User;

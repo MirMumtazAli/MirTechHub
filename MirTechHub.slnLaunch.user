@@ -5,6 +5,10 @@
       {
         "Path": "MTHAPI\\MTHAPI.csproj",
         "Action": "Start"
+      },
+      {
+        "Path": "MTHUI\\MTHUI.esproj",
+        "Action": "Start"
       }
     ]
   }

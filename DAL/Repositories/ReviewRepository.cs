@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DAL.DAO;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class ReviewRepository : IReviewRepository
 {
@@ -36,6 +40,21 @@ public class ReviewRepository : IReviewRepository
         return await _context.Reviews
             .Include(r => r.Author)
             .FirstOrDefaultAsync(r => r.Id == reviewId);
+    }
+
+    public async Task<IEnumerable<Review>> GetByRelatedIdAsync(string type, string relatedId)
+    {
+        if (!System.Enum.TryParse<ReviewType>(type, true, out var reviewType))
+        {
+            return new List<Review>();
+        }
+
+        // Fetch all reviews for the item, including replies, and let the service layer structure them.
+        return await _context.Reviews
+            .Where(r => r.Type == reviewType && r.RelatedId == relatedId)
+            .Include(r => r.Author)
+            .OrderBy(r => r.Date) // Order by date to structure threads correctly
+            .ToListAsync();
     }
 
     public void Update(Review review)

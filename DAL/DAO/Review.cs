@@ -28,4 +28,11 @@ public class Review
 
     [ForeignKey("AuthorId")]
     public virtual ApplicationUser Author { get; set; } = null!;
+
+    // Self-referencing relationship for replies
+    public int? ParentId { get; set; }
+
+    [ForeignKey("ParentId")]
+    public virtual Review? ParentReview { get; set; }
+    public virtual ICollection<Review> Replies { get; set; } = new List<Review>();
 }

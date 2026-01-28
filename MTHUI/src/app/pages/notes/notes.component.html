@@ -1,4 +1,3 @@
-
 <div class="space-y-12">
   <header class="text-center">
     <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
@@ -10,9 +9,28 @@
     </p>
   </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-    @for (note of notes(); track note.id) {
-      <app-product-card [product]="note"></app-product-card>
+  <div class="mb-8 max-w-lg mx-auto">
+    <input type="text"
+           placeholder="Search for notes..."
+           [value]="searchTerm()"
+           (input)="onSearch($event)"
+           class="bg-white w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-h-[400px]">
+    @for (note of paginatedNotes(); track note.id) {
+    <app-product-card [product]="note"></app-product-card>
+    } @empty {
+    <p class="text-center text-slate-500 py-8 md:col-span-2 lg:col-span-3 xl:col-span-4">
+      No notes found matching your search.
+    </p>
     }
   </div>
+
+  <app-pagination [currentPage]="currentPage()"
+                  [totalPages]="totalPages()"
+                  [totalItems]="totalItems()"
+                  [itemsPerPage]="itemsPerPage()"
+                  (pageChange)="onPageChange($event)">
+  </app-pagination>
 </div>

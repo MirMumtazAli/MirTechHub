@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Router } from '@angular/router';
+import { PageVisibilityService } from '../../services/page-visibility.service';
 
 // Re-using the password match validator logic
 export function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -14,18 +14,22 @@ export function passwordsMatchValidator(control: AbstractControl): ValidationErr
 
 @Component({
   selector: 'app-account',
-  templateUrl: './account.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './account.component.html',
+  imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent {
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
-  private fb = inject(FormBuilder);
+  private fb: FormBuilder = inject(FormBuilder);
+  pageVisibilityService = inject(PageVisibilityService);
 
   isLoading = signal(false);
+  showOldPassword = signal(false);
+  showNewPassword = signal(false);
+  showConfirmPassword = signal(false);
 
   changePasswordForm = this.fb.group({
     oldPassword: ['', Validators.required],
@@ -55,13 +59,25 @@ export class AccountComponent {
       },
       error: (err) => {
         this.isLoading.set(false);
-        // Handle specific errors from the backend
-        if (err.error && Array.isArray(err.error)) {
-          const errorMessage = err.error.map((e: any) => e.description).join(' ');
-          this.notificationService.show(errorMessage || 'An unknown error occurred.', 'error');
-        } else {
-          this.notificationService.show('Failed to change password. Please check your current password.', 'error');
+        let errorMessage = 'Failed to change password. Please check your current password.';
+
+        if (err.error) {
+          if (Array.isArray(err.error)) {
+            // Handles ASP.NET Core Identity errors which are arrays of objects
+            errorMessage = err.error.map((e: { description: string }) => e.description).join(' ');
+          } else if (typeof err.error === 'string') {
+            // Handles simple string errors
+            errorMessage = err.error;
+          } else if (err.error.message && typeof err.error.message === 'string') {
+            // Handles errors like { message: '...' }
+            errorMessage = err.error.message;
+          } else if (err.error.title && typeof err.error.title === 'string') {
+            // Handle ProblemDetails-like errors
+            errorMessage = err.error.title;
+          }
         }
+
+        this.notificationService.show(errorMessage, 'error');
       }
     });
   }

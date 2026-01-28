@@ -1,0 +1,80 @@
+:host ::ng-deep .ql-container {
+  min-height: 120px;
+  font-size: 1rem;
+  line-height: 1.5;
+  background-color: #fff;
+}
+
+:host ::ng-deep .ql-toolbar.ql-snow {
+  border-top-left-radius: 0.375rem; /* rounded-md */
+  border-top-right-radius: 0.375rem; /* rounded-md */
+  border-color: #cbd5e1; /* slate-300 */
+  background-color: #f8fafc; /* slate-50 */
+}
+
+:host ::ng-deep .ql-container.ql-snow {
+  border-bottom-left-radius: 0.375rem; /* rounded-md */
+  border-bottom-right-radius: 0.375rem; /* rounded-md */
+  border-color: #cbd5e1; /* slate-300 */
+}
+
+:host ::ng-deep .ql-snow .ql-stroke {
+  fill: none;
+  stroke: #475569; /* slate-600 */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+:host ::ng-deep .ql-snow .ql-fill {
+  fill: #475569; /* slate-600 */
+  stroke: none;
+}
+
+:host ::ng-deep .ql-snow .ql-thin,
+:host ::ng-deep .ql-snow .ql-stroke.ql-thin {
+  stroke-width: 1;
+}
+
+:host ::ng-deep .ql-snow.ql-toolbar button:hover,
+:host ::ng-deep .ql-snow .ql-toolbar button:hover {
+  background-color: #f1f5f9; /* slate-100 */
+}
+
+  :host ::ng-deep .ql-snow.ql-toolbar button:hover .ql-stroke,
+  :host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-stroke {
+    stroke: #0f172a; /* slate-900 */
+  }
+
+  :host ::ng-deep .ql-snow.ql-toolbar button:hover .ql-fill,
+  :host ::ng-deep .ql-snow .ql-toolbar button:hover .ql-fill {
+    fill: #0f172a; /* slate-900 */
+  }
+
+:host ::ng-deep .ql-snow.ql-toolbar button.ql-active,
+:host ::ng-deep .ql-snow .ql-toolbar button.ql-active {
+  background-color: #e2e8f0; /* slate-200 */
+}
+
+  :host ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+  :host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+    stroke: #1e293b; /* slate-800 */
+  }
+
+  :host ::ng-deep .ql-snow.ql-toolbar button.ql-active .ql-fill,
+  :host ::ng-deep .ql-snow .ql-toolbar button.ql-active .ql-fill {
+    fill: #1e293b; /* slate-800 */
+  }
+
+:host ::ng-deep .ql-snow .ql-picker-label {
+  color: #475569; /* slate-600 */
+}
+
+:host ::ng-deep .ql-snow.ql-toolbar .ql-picker-label:hover,
+:host ::ng-deep .ql-snow.ql-toolbar .ql-picker-item:hover {
+  color: #0f172a; /* slate-900 */
+}
+
+:host ::ng-deep .ql-editor {
+  padding: 12px;
+}

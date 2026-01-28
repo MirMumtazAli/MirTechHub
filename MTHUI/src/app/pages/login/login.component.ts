@@ -16,11 +16,12 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private notificationService = inject(NotificationService);
-  private router = inject(Router);
-  // FIX: Explicitly type FormBuilder to resolve type inference issues.
+  // FIX: Add explicit type to 'router' to prevent it from being inferred as 'unknown'.
+  private router: Router = inject(Router);
   private fb: FormBuilder = inject(FormBuilder);
 
   isLoading = signal(false);
+  showPassword = signal(false);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

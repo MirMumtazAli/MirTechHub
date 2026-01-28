@@ -39,7 +39,7 @@ export class ProductService {
 
   getProductById(id: number, type: 'note' | 'software'): Observable<Product | undefined> {
     // Optimization: Check the local signal first before fetching from the API.
-    const signalToCheck = type === 'note' ? this.notes : this.software;
+    const signalToCheck = type.toLowerCase() === 'note' ? this.notes : this.software;
     const existingProduct = signalToCheck().find(p => p.id === id);
 
     if (existingProduct) {
@@ -55,7 +55,7 @@ export class ProductService {
     const { type, ...dto } = product;
     this.http.post<Product>(`${this.baseUrl}?type=${type}`, dto).pipe(
       tap(newProduct => {
-        const signalToUpdate = type === 'note' ? this.notes : this.software;
+        const signalToUpdate = type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products => [...products, newProduct]);
       })
     ).subscribe();
@@ -65,7 +65,7 @@ export class ProductService {
     const { type, id, ...dto } = updatedProduct;
     this.http.put<Product>(`${this.baseUrl}/${id}`, dto).pipe(
       tap(savedProduct => {
-        const signalToUpdate = type === 'note' ? this.notes : this.software;
+        const signalToUpdate = type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.map(p => p.id === savedProduct.id ? savedProduct : p)
         );
@@ -76,7 +76,7 @@ export class ProductService {
   deleteProduct(productToDelete: Product) {
     this.http.patch(`${this.baseUrl}/${productToDelete.id}/delete`, {}).pipe(
       tap(() => {
-        const signalToUpdate = productToDelete.type === 'note' ? this.notes : this.software;
+        const signalToUpdate = productToDelete.type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.map(p => p.id === productToDelete.id ? { ...p, isDeleted: true } : p)
         );
@@ -87,7 +87,7 @@ export class ProductService {
   deleteProductPermanently(productToDelete: Product) {
     this.http.delete(`${this.baseUrl}/${productToDelete.id}`).pipe(
       tap(() => {
-        const signalToUpdate = productToDelete.type === 'note' ? this.notes : this.software;
+        const signalToUpdate = productToDelete.type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.filter(p => p.id !== productToDelete.id)
         );
@@ -98,7 +98,7 @@ export class ProductService {
   restoreProduct(productToRestore: Product) {
     this.http.patch(`${this.baseUrl}/${productToRestore.id}/restore`, {}).pipe(
       tap(() => {
-        const signalToUpdate = productToRestore.type === 'note' ? this.notes : this.software;
+        const signalToUpdate = productToRestore.type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.map(p => p.id === productToRestore.id ? { ...p, isDeleted: false } : p)
         );
@@ -109,7 +109,7 @@ export class ProductService {
   toggleFeaturedStatus(productToToggle: Product) {
     this.http.patch<Product>(`${this.baseUrl}/${productToToggle.id}/toggle-featured`, {}).pipe(
       tap(() => {
-        const signalToUpdate = productToToggle.type === 'note' ? this.notes : this.software;
+        const signalToUpdate = productToToggle.type.toLowerCase() === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.map(product =>
             product.id === productToToggle.id
