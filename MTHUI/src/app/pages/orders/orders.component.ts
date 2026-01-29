@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { Title } from '@angular/platform-browser';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { OrderService } from '../../services/order.service';
 import { Product } from '../../models/product.model';
 import { Order, OrderItem } from '../../models/order.model';
@@ -8,18 +9,23 @@ import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-
 
 @Component({
   selector: 'app-orders',
-  templateUrl: './orders.component.html',
   standalone: true,
+  templateUrl: './orders.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, DatePipe, CurrencyPipe, ConfirmDeleteComponent]
+  imports: [DatePipe, CurrencyPipe, ConfirmDeleteComponent]
 })
 export class OrdersComponent {
   private orderService = inject(OrderService);
   private notificationService = inject(NotificationService);
+  private titleService = inject(Title);
   orders = this.orderService.userOrders;
 
   isCancelModalOpen = signal(false);
   orderToCancel = signal<Order | null>(null);
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - My Orders');
+  }
 
   sendNoteByEmail(item: OrderItem) {
     // In a real app, this would call a backend service.

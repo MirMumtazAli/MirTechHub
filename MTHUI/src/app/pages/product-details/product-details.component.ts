@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, ParamMap } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { Product } from '../../models/product.model';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { ReviewService } from '../../services/review.service';
 import { AuthService } from '../../services/auth.service';
@@ -12,6 +13,7 @@ import { Review } from '../../models/review.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageVisibilityService } from '../../services/page-visibility.service';
 import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-delete.component';
+import { SafeHtmlPipe } from '../../../pipes/safe-html.pipe';
 
 declare var Quill: any;
 
@@ -19,7 +21,7 @@ declare var Quill: any;
   selector: 'app-product-details',
   standalone: true,
   templateUrl: './product-details.component.html',
-  imports: [AsyncPipe, CurrencyPipe, RouterLink, ReactiveFormsModule, DatePipe, ConfirmDeleteComponent],
+  imports: [AsyncPipe, CurrencyPipe, RouterLink, ReactiveFormsModule, DatePipe, ConfirmDeleteComponent, SafeHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailsComponent implements AfterViewInit {
@@ -28,6 +30,7 @@ export class ProductDetailsComponent implements AfterViewInit {
   private reviewService = inject(ReviewService);
   private fb: FormBuilder = inject(FormBuilder);
   private router: Router = inject(Router);
+  private titleService = inject(Title);
   authService = inject(AuthService);
   cartService = inject(CartService);
   pageVisibilityService = inject(PageVisibilityService);
@@ -56,6 +59,13 @@ export class ProductDetailsComponent implements AfterViewInit {
 
       this.productId.set(null);
       return of(undefined);
+    }),
+    tap(product => {
+      if (product) {
+        this.titleService.setTitle(`MirTechHub - ${product.name}`);
+      } else {
+        this.titleService.setTitle('MirTechHub - Product Not Found');
+      }
     })
   );
 

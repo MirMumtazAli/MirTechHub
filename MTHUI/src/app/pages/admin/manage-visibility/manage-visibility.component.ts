@@ -1,16 +1,20 @@
-
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { PageVisibilityService } from '../../../services/page-visibility.service';
 
 @Component({
   selector: 'app-manage-visibility',
+  standalone: true,
   templateUrl: './manage-visibility.component.html',
   styleUrls: ['./manage-visibility.component.css'],
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule]
+  imports: []
 })
 export class ManageVisibilityComponent {
   pageVisibilityService = inject(PageVisibilityService);
+  private titleService = inject(Title);
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Admin: Settings');
+  }
 }

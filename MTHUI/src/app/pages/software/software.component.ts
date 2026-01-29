@@ -1,23 +1,31 @@
 import { Component, ChangeDetectionStrategy, inject, Signal, computed, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { ProductCardSkeletonComponent } from '../../components/product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-software',
   standalone: true,
   templateUrl: './software.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ProductCardComponent, PaginationComponent]
+  imports: [ProductCardComponent, PaginationComponent, ProductCardSkeletonComponent]
 })
 export class SoftwareComponent {
   private productService = inject(ProductService);
+  private titleService = inject(Title);
   private allSoftware: Signal<Product[]> = computed(() =>
     this.productService.getSoftware()().filter(p => !p.isDeleted)
   );
 
+  isLoading = this.productService.getSoftwareLoading();
   searchTerm = signal('');
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Software');
+  }
 
   filteredSoftware = computed(() => {
     const term = this.searchTerm().toLowerCase();

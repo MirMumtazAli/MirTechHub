@@ -1,18 +1,20 @@
 import { Component, ChangeDetectionStrategy, inject, Signal, signal, computed } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { Title } from '@angular/platform-browser';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { OrderService } from '../../../services/order.service';
 import { Order, OrderStatus } from '../../../models/order.model';
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 
 @Component({
   selector: 'app-manage-orders',
-  templateUrl: './manage-orders.component.html',
   standalone: true,
+  templateUrl: './manage-orders.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, DatePipe, CurrencyPipe, PaginationComponent]
+  imports: [DatePipe, CurrencyPipe, PaginationComponent]
 })
 export class ManageOrdersComponent {
   private orderService = inject(OrderService);
+  private titleService = inject(Title);
   orders: Signal<Order[]> = this.orderService.orders;
 
   // Pagination state
@@ -31,6 +33,10 @@ export class ManageOrdersComponent {
   });
 
   readonly orderStatuses: OrderStatus[] = ['Pending', 'Processing', 'Completed', 'Cancelled'];
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Admin: Manage Orders');
+  }
 
   onStatusChange(order: Order, event: Event) {
     const selectElement = event.target as HTMLSelectElement;

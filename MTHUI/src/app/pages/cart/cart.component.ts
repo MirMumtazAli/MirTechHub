@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Title } from '@angular/platform-browser';
+import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
@@ -8,19 +9,24 @@ import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-cart',
-  templateUrl: './cart.component.html',
   standalone: true,
+  templateUrl: './cart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, CurrencyPipe]
+  imports: [CurrencyPipe]
 })
 export class CartComponent {
   cartService = inject(CartService);
   orderService = inject(OrderService);
   notificationService = inject(NotificationService);
   router: Router = inject(Router);
+  private titleService = inject(Title);
 
   cartItems = this.cartService.items;
   totalPrice = this.cartService.totalPrice;
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Cart');
+  }
 
   removeItem(product: Product) {
     this.cartService.removeItem(product);

@@ -1,6 +1,5 @@
-
 import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { BlogService } from '../../../services/blog.service';
 import { BlogPost } from '../../../models/blog-post.model';
 import { BlogFormComponent } from '../../../components/blog-form/blog-form.component';
@@ -9,13 +8,14 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
 
 @Component({
   selector: 'app-manage-blogs',
-  templateUrl: './manage-blogs.component.html',
   standalone: true,
+  templateUrl: './manage-blogs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, BlogFormComponent, ConfirmDeleteComponent, PaginationComponent]
+  imports: [BlogFormComponent, ConfirmDeleteComponent, PaginationComponent]
 })
 export class ManageBlogsComponent {
   private blogService = inject(BlogService);
+  private titleService = inject(Title);
   posts: Signal<BlogPost[]> = this.blogService.getPosts();
 
   // Pagination state
@@ -41,6 +41,10 @@ export class ManageBlogsComponent {
 
   isPermanentDeleteModalOpen = signal(false);
   postToPermanentlyDelete = signal<BlogPost | null>(null);
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Admin: Manage Blogs');
+  }
 
   openAddModal() {
     this.editingPost.set(null);
@@ -84,7 +88,7 @@ export class ManageBlogsComponent {
     this.isDeleteModalOpen.set(false);
     this.postToDelete.set(null);
   }
-  
+
   onDeletePermanently(post: BlogPost) {
     this.postToPermanentlyDelete.set(post);
     this.isPermanentDeleteModalOpen.set(true);

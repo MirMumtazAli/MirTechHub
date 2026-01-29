@@ -18,12 +18,18 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 min-h-[400px]">
+    @if (isLoading()) {
+    @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+    <app-product-card-skeleton></app-product-card-skeleton>
+    }
+    } @else {
     @for (note of paginatedNotes(); track note.id) {
     <app-product-card [product]="note"></app-product-card>
     } @empty {
     <p class="text-center text-slate-500 py-8 md:col-span-2 lg:col-span-3 xl:col-span-4">
       No notes found matching your search.
     </p>
+    }
     }
   </div>
 

@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -24,6 +25,7 @@ export function passwordsMatchValidator(control: AbstractControl): ValidationErr
 })
 export class RegisterComponent {
   private authService = inject(AuthService);
+  private titleService = inject(Title);
   // FIX: Add explicit type to 'router' to prevent it from being inferred as 'unknown'.
   private router: Router = inject(Router);
   private fb: FormBuilder = inject(FormBuilder);
@@ -38,6 +40,10 @@ export class RegisterComponent {
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
   }, { validators: passwordsMatchValidator });
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Register');
+  }
 
   register() {
     if (this.registerForm.valid) {

@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
@@ -16,6 +17,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private notificationService = inject(NotificationService);
+  private titleService = inject(Title);
   // FIX: Add explicit type to 'router' to prevent it from being inferred as 'unknown'.
   private router: Router = inject(Router);
   private fb: FormBuilder = inject(FormBuilder);
@@ -27,6 +29,10 @@ export class LoginComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Login');
+  }
 
   login() {
     if (this.loginForm.invalid) return;

@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, ViewChild, ElementRef, AfterViewInit, computed } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, ParamMap } from '@angular/router';
 import { BlogService } from '../../../services/blog.service';
 import { BlogPost } from '../../../models/blog-post.model';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { ReviewService } from '../../../services/review.service';
 import { AuthService } from '../../../services/auth.service';
@@ -11,6 +12,8 @@ import { Review } from '../../../models/review.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageVisibilityService } from '../../../services/page-visibility.service';
 import { ConfirmDeleteComponent } from '../../../components/confirm-delete/confirm-delete.component';
+import { SafeHtmlPipe } from '../../../../pipes/safe-html.pipe';
+import { PaginationComponent } from '../../../components/pagination/pagination.component';
 
 declare var Quill: any;
 
@@ -19,7 +22,7 @@ declare var Quill: any;
   standalone: true,
   templateUrl: './blog-post.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, DatePipe, ConfirmDeleteComponent, AsyncPipe]
+  imports: [RouterLink, ReactiveFormsModule, DatePipe, ConfirmDeleteComponent, AsyncPipe, SafeHtmlPipe, PaginationComponent]
 })
 export class BlogPostComponent implements AfterViewInit {
   private route: ActivatedRoute = inject(ActivatedRoute);
@@ -27,6 +30,7 @@ export class BlogPostComponent implements AfterViewInit {
   private reviewService = inject(ReviewService);
   private fb: FormBuilder = inject(FormBuilder);
   private router: Router = inject(Router);
+  private titleService = inject(Title);
   authService = inject(AuthService);
   pageVisibilityService = inject(PageVisibilityService);
 
@@ -35,6 +39,25 @@ export class BlogPostComponent implements AfterViewInit {
   @ViewChild('commentEditor') commentEditorEl!: ElementRef;
   private commentQuill: any;
   private isCommentEditorInitialized = false;
+
+  // Pagination state for comments
+  currentPage = signal(1);
+  itemsPerPage = signal(5);
+
+  // Computed values for pagination
+  totalItems = computed(() => this.comments().length);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
+
+  paginatedComments = computed(() => {
+    const allComments = this.comments();
+    const startIndex = (this.currentPage() - 1) * this.itemsPerPage();
+    const endIndex = startIndex + this.itemsPerPage();
+    return allComments.slice(startIndex, endIndex);
+  });
+
+  onPageChange(page: number): void {
+    this.currentPage.set(page);
+  }
 
   readonly post$: Observable<BlogPost | undefined> = this.route.paramMap.pipe(
     switchMap((params: ParamMap) => {
@@ -45,6 +68,13 @@ export class BlogPostComponent implements AfterViewInit {
         return this.blogService.getPostById(id);
       }
       return of(undefined);
+    }),
+    tap(post => {
+      if (post) {
+        this.titleService.setTitle(`MirTechHub - ${post.title}`);
+      } else {
+        this.titleService.setTitle('MirTechHub - Post Not Found');
+      }
     })
   );
 

@@ -1,24 +1,33 @@
 import { Component, ChangeDetectionStrategy, inject, Signal, signal, computed } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { BlogService } from '../../services/blog.service';
 import { BlogPost } from '../../models/blog-post.model';
 import { DatePipe } from '@angular/common';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { SafeHtmlPipe } from '../../../pipes/safe-html.pipe';
+import { BlogPostSkeletonComponent } from '../../components/blog-post-skeleton/blog-post-skeleton.component';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
   templateUrl: './blog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, DatePipe, PaginationComponent]
+  imports: [RouterLink, DatePipe, PaginationComponent, SafeHtmlPipe, BlogPostSkeletonComponent]
 })
 export class BlogComponent {
   private blogService = inject(BlogService);
+  private titleService = inject(Title);
   private allPosts: Signal<BlogPost[]> = computed(() =>
     this.blogService.getPosts()().filter(p => !p.isDeleted)
   );
 
+  isLoading = this.blogService.getPostsLoading();
   searchTerm = signal('');
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Blog');
+  }
 
   filteredPosts = computed(() => {
     const term = this.searchTerm().toLowerCase();

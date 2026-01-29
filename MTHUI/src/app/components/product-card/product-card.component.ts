@@ -1,21 +1,27 @@
 import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { CurrencyPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { Product } from '../../models/product.model';
 import { CartService } from '../../services/cart.service';
+import { SafeHtmlPipe } from '../../../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-product-card',
-  templateUrl: './product-card.component.html',
   standalone: true,
+  templateUrl: './product-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, CurrencyPipe, RouterLink]
+  imports: [CurrencyPipe, SafeHtmlPipe]
 })
 export class ProductCardComponent {
   product = input.required<Product>();
   private cartService = inject(CartService);
+  private router = inject(Router);
 
   addToCart() {
     this.cartService.handleAddToCart(this.product());
+  }
+
+  navigateToDetails() {
+    this.router.navigate(['/', this.product().type.toLowerCase(), this.product().id]);
   }
 }

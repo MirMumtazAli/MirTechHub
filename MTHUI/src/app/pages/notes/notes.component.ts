@@ -1,23 +1,31 @@
 import { Component, ChangeDetectionStrategy, inject, Signal, computed, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { ProductCardSkeletonComponent } from '../../components/product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-notes',
   standalone: true,
   templateUrl: './notes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ProductCardComponent, PaginationComponent]
+  imports: [ProductCardComponent, PaginationComponent, ProductCardSkeletonComponent]
 })
 export class NotesComponent {
   private productService = inject(ProductService);
+  private titleService = inject(Title);
   private allNotes: Signal<Product[]> = computed(() =>
     this.productService.getNotes()().filter(p => !p.isDeleted)
   );
 
+  isLoading = this.productService.getNotesLoading();
   searchTerm = signal('');
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Notes');
+  }
 
   filteredNotes = computed(() => {
     const term = this.searchTerm().toLowerCase();

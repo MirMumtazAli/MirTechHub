@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { CurrencyPipe } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 import { Product } from '../../../models/product.model';
@@ -15,6 +16,7 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
 })
 export class ManageSoftwareComponent {
   private productService = inject(ProductService);
+  private titleService = inject(Title);
   software: Signal<Product[]> = this.productService.getSoftware();
 
   // Pagination state
@@ -40,6 +42,10 @@ export class ManageSoftwareComponent {
 
   isPermanentDeleteModalOpen = signal(false);
   productToPermanentlyDelete = signal<Product | null>(null);
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Admin: Manage Software');
+  }
 
   openAddModal() {
     this.editingProduct.set(null);

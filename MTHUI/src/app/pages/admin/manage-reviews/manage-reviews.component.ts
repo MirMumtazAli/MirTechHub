@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, Signal, signal, computed } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 import { ReviewService } from '../../../services/review.service';
 import { Review } from '../../../models/review.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,11 +12,12 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
   standalone: true,
   templateUrl: './manage-reviews.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, ConfirmDeleteComponent, PaginationComponent]
+  imports: [DatePipe, ReactiveFormsModule, ConfirmDeleteComponent, PaginationComponent]
 })
 export class ManageReviewsComponent {
   private reviewService = inject(ReviewService);
-  private fb = inject(FormBuilder);
+  private fb: FormBuilder = inject(FormBuilder);
+  private titleService = inject(Title);
   reviews: Signal<Review[]> = this.reviewService.allReviews;
 
   // Pagination state
@@ -42,6 +45,10 @@ export class ManageReviewsComponent {
     rating: [0],
     comment: ['', Validators.required]
   });
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Admin: Manage Reviews');
+  }
 
   openEditModal(review: Review) {
     this.editingReview.set(review);

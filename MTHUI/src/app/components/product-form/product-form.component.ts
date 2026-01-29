@@ -8,7 +8,6 @@ declare var Quill: any;
   selector: 'app-product-form',
   standalone: true,
   templateUrl: './product-form.component.html',
-  styleUrls: ['./product-form.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule]
 })
@@ -18,9 +17,12 @@ export class ProductFormComponent implements AfterViewInit {
   save = output<Product>();
   cancel = output<void>();
 
-  @ViewChild('editor') editorEl!: ElementRef;
-  private quill: any;
-  private isEditorInitialized = false;
+  @ViewChild('detailsEditor') detailsEditorEl!: ElementRef;
+  @ViewChild('descriptionEditor') descriptionEditorEl!: ElementRef;
+  private quillDetails: any;
+  private quillDescription: any;
+  private isDetailsEditorInitialized = false;
+  private isDescriptionEditorInitialized = false;
 
   private fb: FormBuilder = inject(FormBuilder);
 
@@ -40,18 +42,20 @@ export class ProductFormComponent implements AfterViewInit {
     effect(() => {
       const currentProduct = this.product();
       if (currentProduct) {
-        const { details, ...productData } = currentProduct;
+        const { details, description, ...productData } = currentProduct;
         this.productForm.patchValue({
           ...productData,
           isFree: currentProduct.price === 0,
           isFeatured: currentProduct.isFeatured ?? false,
           hasPdf: !!currentProduct.pdfUrl,
         });
-        this.setEditorContent(details || '');
+        this.setDetailsEditorContent(details || '');
+        this.setDescriptionEditorContent(description || '');
 
       } else {
         this.productForm.reset({ name: '', description: '', details: '', price: 0, isFree: false, hasPdf: false, pdfUrl: '', imageUrl: '', isFeatured: false });
-        this.setEditorContent('');
+        this.setDetailsEditorContent('');
+        this.setDescriptionEditorContent('');
       }
     });
 
@@ -73,45 +77,80 @@ export class ProductFormComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.editorEl) {
-      const toolbarOptions = [
-        [{ 'header': [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        [{ 'align': [] }],
-        ['link', 'image', 'blockquote', 'code-block'],
-        [{ 'color': [] }, { 'background': [] }],
-        ['clean']
-      ];
-
-      this.quill = new Quill(this.editorEl.nativeElement, {
-        modules: {
-          toolbar: toolbarOptions
-        },
-        theme: 'snow',
-        placeholder: 'Enter the full details for the product here...'
-      });
-      this.isEditorInitialized = true;
-
-      const initialContent = this.productForm.get('details')?.value;
-      if (initialContent) {
-        this.setEditorContent(initialContent);
-      }
-
-      this.quill.on('text-change', () => {
-        const content = this.quill.root.innerHTML;
-        const finalContent = content === '<p><br></p>' ? '' : content;
-        this.productForm.get('details')?.setValue(finalContent, { emitEvent: false });
-        this.productForm.get('details')?.markAsTouched();
-      });
+    if (this.detailsEditorEl) {
+      this.initializeDetailsEditor();
+    }
+    if (this.descriptionEditorEl) {
+      this.initializeDescriptionEditor();
     }
   }
 
-  private setEditorContent(content: string) {
-    if (this.isEditorInitialized) {
-      this.quill.clipboard.dangerouslyPasteHTML(content);
+  private initializeDescriptionEditor() {
+    const toolbarOptions = [['bold', 'italic', 'underline'], ['clean']];
+    this.quillDescription = new Quill(this.descriptionEditorEl.nativeElement, {
+      modules: { toolbar: toolbarOptions },
+      theme: 'snow',
+      placeholder: 'Write a short, engaging summary...'
+    });
+    this.isDescriptionEditorInitialized = true;
+
+    const initialContent = this.productForm.get('description')?.value;
+    if (initialContent) {
+      this.setDescriptionEditorContent(initialContent);
+    }
+
+    this.quillDescription.on('text-change', () => {
+      const content = this.quillDescription.root.innerHTML;
+      const finalContent = content === '<p><br></p>' ? '' : content;
+      this.productForm.get('description')?.setValue(finalContent, { emitEvent: false });
+      this.productForm.get('description')?.markAsTouched();
+    });
+  }
+
+  private initializeDetailsEditor() {
+    const toolbarOptions = [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['link', 'image', 'blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      ['clean']
+    ];
+
+    this.quillDetails = new Quill(this.detailsEditorEl.nativeElement, {
+      modules: { toolbar: toolbarOptions },
+      theme: 'snow',
+      placeholder: 'Enter the full details for the product here...'
+    });
+    this.isDetailsEditorInitialized = true;
+
+    const initialContent = this.productForm.get('details')?.value;
+    if (initialContent) {
+      this.setDetailsEditorContent(initialContent);
+    }
+
+    this.quillDetails.on('text-change', () => {
+      const content = this.quillDetails.root.innerHTML;
+      const finalContent = content === '<p><br></p>' ? '' : content;
+      this.productForm.get('details')?.setValue(finalContent, { emitEvent: false });
+      this.productForm.get('details')?.markAsTouched();
+    });
+  }
+
+  private setDetailsEditorContent(content: string) {
+    if (this.isDetailsEditorInitialized) {
+      this.quillDetails.clipboard.dangerouslyPasteHTML(content);
     } else {
       this.productForm.get('details')?.setValue(content);
+    }
+  }
+
+  private setDescriptionEditorContent(content: string) {
+    if (this.isDescriptionEditorInitialized) {
+      this.quillDescription.clipboard.dangerouslyPasteHTML(content);
+    } else {
+      this.productForm.get('description')?.setValue(content);
     }
   }
 

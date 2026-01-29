@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
@@ -24,7 +25,8 @@ export class AccountComponent {
   private notificationService = inject(NotificationService);
   private router = inject(Router);
   private fb: FormBuilder = inject(FormBuilder);
-  pageVisibilityService = inject(PageVisibilityService);
+  private titleService = inject(Title);
+  public pageVisibilityService = inject(PageVisibilityService);
 
   isLoading = signal(false);
   showOldPassword = signal(false);
@@ -36,6 +38,10 @@ export class AccountComponent {
     newPassword: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
   }, { validators: passwordsMatchValidator });
+
+  constructor() {
+    this.titleService.setTitle('MirTechHub - Account Settings');
+  }
 
   submitForm() {
     if (this.changePasswordForm.invalid) {
