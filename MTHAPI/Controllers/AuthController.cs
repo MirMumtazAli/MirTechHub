@@ -1,176 +1,119 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
 
-    public AuthController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IConfiguration configuration)
+    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
         _configuration = configuration;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-        var user = new ApplicationUser
+        var userExists = await _userManager.FindByEmailAsync(registerDto.Email);
+        if (userExists != null)
+            return BadRequest(new { Message = "This email is already in use. Please use a different email." });
+
+        ApplicationUser user = new()
         {
-            Name = registerDto.Name,
+            Email = registerDto.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
             UserName = registerDto.Email,
-            Email = registerDto.Email
+            Name = registerDto.Name
         };
 
         var result = await _userManager.CreateAsync(user, registerDto.Password);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest(new { Message = $"User creation failed: {errors}" });
+        }
+
+        // Assign 'User' role by default
+        await _userManager.AddToRoleAsync(user, "User");
+
+        return Ok(new { Status = "Success", Message = "User created successfully!" });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+            return Ok(new AuthResponseDto
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo
+            });
+        }
+        return Unauthorized();
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
         if (!result.Succeeded)
         {
             return BadRequest(result.Errors);
         }
 
-        await _userManager.AddToRoleAsync(user, "User");
-        return Ok(new { Message = "Registration successful" });
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto loginDto)
-    {
-        var result = await _signInManager.PasswordSignInAsync(
-            loginDto.Email,
-            loginDto.Password,
-            isPersistent: false,
-            lockoutOnFailure: false);
-
-        if (!result.Succeeded)
-        {
-            return Unauthorized(new { Message = "Invalid credentials" });
-        }
-
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user == null) return Unauthorized();
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var role = roles.FirstOrDefault() ?? "User";
-
-        // ⭐ GENERATE JWT TOKEN
-        var token = GenerateJwtToken(user, role);
-
-        // ⭐ DEBUG: Log the token to backend console
-        Console.WriteLine($"Generated Token: {token}");
-        Console.WriteLine($"Token Length: {token.Length}");
-
-        // ⭐ RETURN THIS EXACT FORMAT
-        return Ok(new
-        {
-            token = token,  // Must be a JWT string
-            expiration = DateTime.Now.AddHours(24).ToString("o"),
-            user = new
-            {
-                id = user.Id,
-                name = user.Name,
-                email = user.Email,
-                role = role.ToLower()
-            }
-        });
-    }
-
-    // ⭐ MAKE SURE THIS METHOD EXISTS
-    private string GenerateJwtToken(ApplicationUser user, string role)
-    {
-        var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-        var credentials = new SigningCredentials(
-            securityKey,
-            SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-        new Claim(ClaimTypes.Name, user.Name ?? ""),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Email, user.Email ?? ""),
-        new Claim(ClaimTypes.Role, role),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(24),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    [Authorize]
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return Ok();
-    }
-
-    [Authorize]
-    [HttpGet("currentuser")]
-    public async Task<IActionResult> GetCurrentUser()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return Unauthorized();
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        var userDto = new UserDto
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = roles.FirstOrDefault()?.ToLower() ?? "user"
-        };
-
-        return Ok(userDto);
-    }
-
-    [Authorize]
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user == null)
-        {
-            return NotFound(new { Message = "User not found" });
-        }
-
-        var result = await _userManager.ChangePasswordAsync(
-            user,
-            dto.OldPassword,      // ⭐ Changed from CurrentPassword
-            dto.NewPassword
-        );
-
-        if (!result.Succeeded)
-        {
-            return BadRequest(new { Message = "Failed to change password. Please check your current password." });
-        }
-
-        return Ok(new { Message = "Password changed successfully" });
+        return Ok(new { Status = "Success", Message = "Password changed successfully." });
     }
 }

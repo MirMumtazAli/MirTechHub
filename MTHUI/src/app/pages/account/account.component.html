@@ -1,6 +1,7 @@
 <div class="bg-white shadow-xl rounded-lg p-6 md:p-8 max-w-2xl mx-auto border border-slate-200">
   <h1 class="text-3xl font-bold text-slate-800 mb-6 border-b pb-4">Account Settings</h1>
 
+  @if (pageVisibilityService.changePasswordVisible()) {
   <div class="mt-8">
     <h2 class="text-xl font-semibold text-slate-800">Change Your Password</h2>
     <p class="text-sm text-slate-500 mt-1">
@@ -21,6 +22,9 @@
             }
           </button>
         </div>
+        @if (changePasswordForm.get('oldPassword')?.invalid && changePasswordForm.get('oldPassword')?.touched) {
+        <p class="mt-1 text-xs text-red-600">Current password is required.</p>
+        }
       </div>
 
       <div>
@@ -36,8 +40,15 @@
             }
           </button>
         </div>
-        @if (newPassword?.hasError('minlength')) {
-        <p class="mt-2 text-xs text-red-600">Password must be at least 8 characters long.</p>
+        @if (newPassword?.invalid && newPassword?.touched) {
+        <div class="mt-1 text-xs text-red-600">
+          @if (newPassword?.hasError('required')) {
+          <p>New password is required.</p>
+          }
+          @if (newPassword?.hasError('minlength')) {
+          <p>Password must be at least 8 characters long.</p>
+          }
+        </div>
         }
       </div>
 
@@ -54,8 +65,11 @@
             }
           </button>
         </div>
+        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+        <p class="mt-1 text-xs text-red-600">Password confirmation is required.</p>
+        }
         @if (changePasswordForm.hasError('passwordsMismatch') && confirmPassword?.touched) {
-        <p class="mt-2 text-xs text-red-600">Passwords do not match.</p>
+        <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
         }
       </div>
 
@@ -74,5 +88,5 @@
       </div>
     </form>
   </div>
-
+  }
 </div>

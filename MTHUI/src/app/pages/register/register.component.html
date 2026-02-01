@@ -20,7 +20,7 @@
           <input id="name" formControlName="name" name="name" type="text" required class="bg-white appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-gray-800 focus:border-gray-800 sm:text-sm">
         </div>
         @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-        <p class="mt-2 text-xs text-red-600">Name is required.</p>
+        <p class="mt-1 text-xs text-red-600">Name is required.</p>
         }
       </div>
 
@@ -30,7 +30,17 @@
           <input id="email-address" formControlName="email" name="email" type="email" autocomplete="email" required class="bg-white appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-gray-800 focus:border-gray-800 sm:text-sm">
         </div>
         @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-        <p class="mt-2 text-xs text-red-600">Please enter a valid email.</p>
+        <div class="mt-1 text-xs text-red-600">
+          @if(registerForm.get('email')?.hasError('required')) {
+          <p>Email is required.</p>
+          }
+          @if(registerForm.get('email')?.hasError('email')) {
+          <p>Please enter a valid email format.</p>
+          }
+          @if(registerForm.get('email')?.hasError('emailInUse')) {
+          <p>This email is already registered. Please use a different one.</p>
+          }
+        </div>
         }
       </div>
 
@@ -47,8 +57,15 @@
             }
           </button>
         </div>
-        @if (password?.hasError('minlength')) {
-        <p class="mt-2 text-xs text-red-600">Password must be at least 8 characters long.</p>
+        @if (password?.invalid && password?.touched) {
+        <div class="mt-1 text-xs text-red-600">
+          @if (password?.hasError('required')) {
+          <p>Password is required.</p>
+          }
+          @if (password?.hasError('minlength')) {
+          <p>Password must be at least 8 characters long.</p>
+          }
+        </div>
         }
       </div>
 
@@ -65,8 +82,11 @@
             }
           </button>
         </div>
+        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+        <p class="mt-1 text-xs text-red-600">Password confirmation is required.</p>
+        }
         @if (registerForm.hasError('passwordsMismatch') && confirmPassword?.touched) {
-        <p class="mt-2 text-xs text-red-600">Passwords do not match.</p>
+        <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
         }
       </div>
 

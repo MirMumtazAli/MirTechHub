@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 public class RegisterDto
 {
@@ -22,6 +23,12 @@ public class LoginDto
     public required string Password { get; set; }
 }
 
+public class AuthResponseDto
+{
+    public required string Token { get; set; }
+    public DateTime Expiration { get; set; }
+}
+
 public class ChangePasswordDto
 {
     [Required]
@@ -34,12 +41,4 @@ public class ChangePasswordDto
     [Required]
     [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
     public required string ConfirmPassword { get; set; }
-}
-
-public class UserDto
-{
-    public required string Id { get; set; }
-    public required string Name { get; set; }
-    public required string Role { get; set; }
-    public required string Email { get; set; }
 }

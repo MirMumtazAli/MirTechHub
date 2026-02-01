@@ -19,6 +19,16 @@
         <div class="mt-1">
           <input id="email-address" formControlName="email" name="email" type="email" autocomplete="email" required class="bg-white appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-gray-800 focus:border-gray-800 sm:text-sm">
         </div>
+        @if (loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)) {
+        <div class="mt-1 text-xs text-red-600">
+          @if (loginForm.get('email')?.hasError('required')) {
+          <p>Email is required.</p>
+          }
+          @if (loginForm.get('email')?.hasError('email')) {
+          <p>Please enter a valid email address.</p>
+          }
+        </div>
+        }
       </div>
 
       <div>
@@ -34,6 +44,9 @@
             }
           </button>
         </div>
+        @if (loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)) {
+        <p class="mt-1 text-xs text-red-600">Password is required.</p>
+        }
       </div>
 
       <div>
