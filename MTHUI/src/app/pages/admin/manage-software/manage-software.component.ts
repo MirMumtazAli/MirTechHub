@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CurrencyPipe } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
+import { NotificationService } from '../../../services/notification.service';
 import { Product } from '../../../models/product.model';
 import { ProductFormComponent } from '../../../components/product-form/product-form.component';
 import { ConfirmDeleteComponent } from '../../../components/confirm-delete/confirm-delete.component';
@@ -16,7 +17,10 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
 })
 export class ManageSoftwareComponent {
   private productService = inject(ProductService);
+  private notificationService = inject(NotificationService);
   private titleService = inject(Title);
+  private cdr = inject(ChangeDetectorRef);
+
   software: Signal<Product[]> = this.productService.getSoftware();
 
   // Pagination state
@@ -26,7 +30,6 @@ export class ManageSoftwareComponent {
   // Computed values for pagination
   totalItems = computed(() => this.software().length);
   totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
-
   paginatedSoftware = computed(() => {
     const allSoftware = this.software();
     const startIndex = (this.currentPage() - 1) * this.itemsPerPage();
@@ -36,10 +39,8 @@ export class ManageSoftwareComponent {
 
   isModalOpen = signal(false);
   editingProduct = signal<Product | null>(null);
-
   isDeleteModalOpen = signal(false);
   productToDelete = signal<Product | null>(null);
-
   isPermanentDeleteModalOpen = signal(false);
   productToPermanentlyDelete = signal<Product | null>(null);
 
@@ -64,8 +65,10 @@ export class ManageSoftwareComponent {
   onSave(product: Product) {
     if (this.editingProduct()) {
       this.productService.updateProduct(product);
+      this.notificationService.show('Software updated successfully', 'success');
     } else {
       this.productService.addProduct(product);
+      this.notificationService.show('Software created successfully', 'success');
     }
     this.closeModal();
   }
@@ -79,6 +82,8 @@ export class ManageSoftwareComponent {
     const product = this.productToDelete();
     if (product) {
       this.productService.deleteProduct(product);
+      this.notificationService.show('Software moved to trash', 'success');
+      this.cdr.markForCheck();
     }
     this.handleCancelDelete();
   }
@@ -97,6 +102,8 @@ export class ManageSoftwareComponent {
     const product = this.productToPermanentlyDelete();
     if (product) {
       this.productService.deleteProductPermanently(product);
+      this.notificationService.show('Software permanently deleted', 'success');
+      this.cdr.markForCheck();
     }
     this.handleCancelPermanentDelete();
   }
@@ -108,10 +115,13 @@ export class ManageSoftwareComponent {
 
   restore(product: Product) {
     this.productService.restoreProduct(product);
+    this.notificationService.show('Software restored successfully', 'success');
+    this.cdr.markForCheck();
   }
 
   toggleFeatured(product: Product) {
     this.productService.toggleFeaturedStatus(product);
+    this.notificationService.show('Featured status updated', 'success');
   }
 
   onPageChange(page: number): void {

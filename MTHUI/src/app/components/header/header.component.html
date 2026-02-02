@@ -1,13 +1,8 @@
 <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200">
   <nav class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-    <a routerLink="/"
-       class="flex items-center gap-2 text-xl font-extrabold text-slate-800 hover:text-black transition-colors">
-      <img src="/MTHImage.png"
-           alt="MirTechHub logo"
-           class="h-8 w-8 object-contain" />
+    <a routerLink="/" class="text-2xl font-extrabold text-slate-800 hover:text-black transition-colors">
       MirTechHub
     </a>
-
     <div class="hidden md:flex items-center space-x-8">
       <a routerLink="/" routerLinkActive="text-black font-semibold" [routerLinkActiveOptions]="{ exact: true }" class="text-slate-600 hover:text-black transition-colors duration-300 font-medium">Home</a>
       @if(pageVisibilityService.noteVisible()) {
@@ -39,6 +34,7 @@
             <a routerLink="/admin/blogs" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Blogs</a>
             <a routerLink="/admin/orders" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Orders</a>
             <a routerLink="/admin/reviews" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Reviews</a>
+            <div class="border-t border-slate-100 my-1"></div>
             <a routerLink="/admin/settings" (click)="toggleAdminMenu()" routerLinkActive="bg-slate-100" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Settings</a>
           </div>
           }
@@ -103,9 +99,6 @@
       @if(pageVisibilityService.blogVisible()) {
       <a routerLink="/blog" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Blog</a>
       }
-      @if(pageVisibilityService.portfolioVisible()) {
-      <a routerLink="/portfolio" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black font-medium">Portfolio</a>
-      }
       <hr />
       @if (currentUser()) {
       @if (isAdmin()) {
@@ -123,6 +116,7 @@
           <a routerLink="/admin/blogs" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Blogs</a>
           <a routerLink="/admin/orders" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Orders</a>
           <a routerLink="/admin/reviews" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Reviews</a>
+          <hr class="my-2 border-slate-200">
           <a routerLink="/admin/settings" routerLinkActive="text-black font-semibold" class="block text-slate-600 hover:text-black">Manage Settings</a>
         </div>
         }

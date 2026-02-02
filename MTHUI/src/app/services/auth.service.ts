@@ -9,7 +9,6 @@ import { environment } from '../../environments/environment';
 interface AuthResponse {
   token: string;
   expiration: string;
-  user: User;
 }
 
 @Injectable({
@@ -17,55 +16,90 @@ interface AuthResponse {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private router: Router = inject(Router);
+  private router = inject(Router);
+
   private readonly baseUrl = `${environment.api.apiUrl}/auth`;
   private readonly TOKEN_KEY = 'authToken';
 
+  // 🔐 Auth state
   readonly currentUser = signal<User | null>(this.getUserFromToken());
-  readonly isAdmin = computed(() => this.currentUser()?.role.toLowerCase() === 'admin');
+
+  // 🛡️ Role check (NULL SAFE)
+  readonly isAdmin = computed(() => {
+    const user = this.currentUser();
+    return !!user && user.role?.toLowerCase() === 'admin';
+  });
+
+  // ===============================
+  // JWT HANDLING
+  // ===============================
 
   private getUserFromToken(): User | null {
     const token = this.getToken();
-    if (!token) {
-      return null;
-    }
+    if (!token) return null;
 
     try {
-      const tokenParts = token.split('.');
-      if (tokenParts.length !== 3) {
-        console.error('Invalid JWT format: token does not have 3 parts.');
+      const payload = this.decodeJwt(token);
+
+      // 🔑 ASP.NET Core standard claim URIs
+      const id =
+        payload['sub'] ||
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+      const name =
+        payload['unique_name'] ||
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+
+      const email =
+        payload['email'] ||
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+
+      const role =
+        payload['role'] ||
+        payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      if (!id) {
         return null;
       }
 
-      const base64Url = tokenParts[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-
-      const payload = JSON.parse(jsonPayload);
-
-      // ⭐ Handle both claim formats
-      const id = payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      const name = payload.name || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-      const email = payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
-      const role = payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-      if (!id || !email || !role) {
-        console.error('Invalid JWT payload: missing required claims.');
+      const userRole = Array.isArray(role) ? role[0] : role;
+      if (!userRole) {
         return null;
       }
 
-      return { id, name: name || '', email, role };
-    } catch (error) {
-      console.error('Failed to decode token:', error);
+      return {
+        id: id.toString(),
+        name: name || '',
+        email: email || '',
+        role: userRole
+      };
+
+    } catch (err) {
       this.clearToken();
       return null;
     }
   }
+
+  private decodeJwt(token: string): any {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid JWT format');
+    }
+
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  }
+
+  // ===============================
+  // TOKEN STORAGE
+  // ===============================
 
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
@@ -78,34 +112,38 @@ export class AuthService {
 
   private clearToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUser.set(null);
   }
 
+  // ===============================
+  // API CALLS
+  // ===============================
+
   login(email: string, password: string): Observable<AuthResponse> {
-    const loginDto: LoginDto = { email, password };
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, loginDto).pipe(
-      tap(response => {
-        
-        if (response.token) {
-          this.setToken(response.token);
-        }
-      })
-    );
+    const dto: LoginDto = { email, password };
+
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/login`, dto)
+      .pipe(
+        tap(res => {
+          if (res?.token) {
+            this.setToken(res.token);
+          }
+        })
+      );
   }
 
   register(name: string, email: string, password: string): Observable<any> {
-    const registerDto: RegisterDto = { name, email, password };
-    // ⭐ FIX: Use proper template literal syntax
-    return this.http.post(`${this.baseUrl}/register`, registerDto);
+    const dto: RegisterDto = { name, email, password };
+    return this.http.post(`${this.baseUrl}/register`, dto);
   }
 
   changePassword(dto: ChangePasswordDto): Observable<any> {
-    // ⭐ FIX: Use proper template literal syntax
     return this.http.post(`${this.baseUrl}/change-password`, dto);
   }
 
-  logout() {
+  logout(): void {
     this.clearToken();
-    this.currentUser.set(null);
     this.router.navigate(['/login']);
   }
 }

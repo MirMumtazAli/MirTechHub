@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, Signal, computed, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CurrencyPipe } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
+import { NotificationService } from '../../../services/notification.service';
 import { Product } from '../../../models/product.model';
 import { ProductFormComponent } from '../../../components/product-form/product-form.component';
 import { ConfirmDeleteComponent } from '../../../components/confirm-delete/confirm-delete.component';
@@ -16,7 +17,10 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
 })
 export class ManageNotesComponent {
   private productService = inject(ProductService);
+  private notificationService = inject(NotificationService);
   private titleService = inject(Title);
+  private cdr = inject(ChangeDetectorRef);
+
   notes: Signal<Product[]> = this.productService.getNotes();
 
   // Pagination state
@@ -26,7 +30,6 @@ export class ManageNotesComponent {
   // Computed values for pagination
   totalItems = computed(() => this.notes().length);
   totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()));
-
   paginatedNotes = computed(() => {
     const allNotes = this.notes();
     const startIndex = (this.currentPage() - 1) * this.itemsPerPage();
@@ -36,10 +39,8 @@ export class ManageNotesComponent {
 
   isModalOpen = signal(false);
   editingProduct = signal<Product | null>(null);
-
   isDeleteModalOpen = signal(false);
   productToDelete = signal<Product | null>(null);
-
   isPermanentDeleteModalOpen = signal(false);
   productToPermanentlyDelete = signal<Product | null>(null);
 
@@ -64,8 +65,10 @@ export class ManageNotesComponent {
   onSave(product: Product) {
     if (this.editingProduct()) {
       this.productService.updateProduct(product);
+      this.notificationService.show('Note updated successfully', 'success');
     } else {
       this.productService.addProduct(product);
+      this.notificationService.show('Note created successfully', 'success');
     }
     this.closeModal();
   }
@@ -79,6 +82,8 @@ export class ManageNotesComponent {
     const product = this.productToDelete();
     if (product) {
       this.productService.deleteProduct(product);
+      this.notificationService.show('Note moved to trash', 'success');
+      this.cdr.markForCheck();
     }
     this.handleCancelDelete();
   }
@@ -97,6 +102,8 @@ export class ManageNotesComponent {
     const product = this.productToPermanentlyDelete();
     if (product) {
       this.productService.deleteProductPermanently(product);
+      this.notificationService.show('Note permanently deleted', 'success');
+      this.cdr.markForCheck();
     }
     this.handleCancelPermanentDelete();
   }
@@ -108,10 +115,13 @@ export class ManageNotesComponent {
 
   restore(product: Product) {
     this.productService.restoreProduct(product);
+    this.notificationService.show('Note restored successfully', 'success');
+    this.cdr.markForCheck();
   }
 
   toggleFeatured(product: Product) {
     this.productService.toggleFeaturedStatus(product);
+    this.notificationService.show('Featured status updated', 'success');
   }
 
   onPageChange(page: number): void {

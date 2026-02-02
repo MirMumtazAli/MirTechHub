@@ -8,7 +8,6 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class ProductService {
-  // FIX: Add explicit type to 'http' to prevent it from being inferred as 'unknown'.
   private http: HttpClient = inject(HttpClient);
   private readonly baseUrl = `${environment.api.apiUrl}/products`;
 
@@ -27,7 +26,10 @@ export class ProductService {
       finalize(() => this.notesLoading.set(false))
     ).subscribe({
       next: data => this.notes.set(data),
-      error: err => console.error('Failed to load notes:', err)
+      error: err => {
+        console.error('Failed to load notes:', err);
+        this.notesLoading.set(false);
+      }
     });
 
     this.softwareLoading.set(true);
@@ -35,7 +37,10 @@ export class ProductService {
       finalize(() => this.softwareLoading.set(false))
     ).subscribe({
       next: data => this.software.set(data),
-      error: err => console.error('Failed to load software:', err)
+      error: err => {
+        console.error('Failed to load software:', err);
+        this.softwareLoading.set(false);
+      }
     });
   }
 
@@ -56,30 +61,29 @@ export class ProductService {
   }
 
   getProductById(id: number, type: 'note' | 'software'): Observable<Product | undefined> {
-    // Optimization: Check the local signal first before fetching from the API.
     const signalToCheck = type === 'note' ? this.notes : this.software;
     const existingProduct = signalToCheck().find(p => p.id === id);
 
     if (existingProduct) {
-      // If found in the signal, return it as an observable.
       return of(existingProduct);
     }
 
-    // If not found locally, fetch fresh data from the API.
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
-  addProduct(product: Product) {
+  addProduct(product: Product): void {
     const { type, ...dto } = product;
     this.http.post<Product>(`${this.baseUrl}?type=${type}`, dto).pipe(
       tap(newProduct => {
         const signalToUpdate = type === 'note' ? this.notes : this.software;
         signalToUpdate.update(products => [...products, newProduct]);
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Add product failed:', err)
+    });
   }
 
-  updateProduct(updatedProduct: Product) {
+  updateProduct(updatedProduct: Product): void {
     const { type, id, ...dto } = updatedProduct;
     this.http.put<Product>(`${this.baseUrl}/${id}`, dto).pipe(
       tap(savedProduct => {
@@ -88,10 +92,12 @@ export class ProductService {
           products.map(p => p.id === savedProduct.id ? savedProduct : p)
         );
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Update product failed:', err)
+    });
   }
 
-  deleteProduct(productToDelete: Product) {
+  deleteProduct(productToDelete: Product): void {
     this.http.patch<Product>(`${this.baseUrl}/${productToDelete.id}/delete`, {}).pipe(
       tap((updatedProduct) => {
         const signalToUpdate = updatedProduct.type === 'note' ? this.notes : this.software;
@@ -99,10 +105,12 @@ export class ProductService {
           products.map(p => p.id === updatedProduct.id ? updatedProduct : p)
         );
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Delete product failed:', err)
+    });
   }
 
-  deleteProductPermanently(productToDelete: Product) {
+  deleteProductPermanently(productToDelete: Product): void {
     this.http.delete(`${this.baseUrl}/${productToDelete.id}`).pipe(
       tap(() => {
         const signalToUpdate = productToDelete.type === 'note' ? this.notes : this.software;
@@ -110,10 +118,12 @@ export class ProductService {
           products.filter(p => p.id !== productToDelete.id)
         );
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Delete product permanently failed:', err)
+    });
   }
 
-  restoreProduct(productToRestore: Product) {
+  restoreProduct(productToRestore: Product): void {
     this.http.patch<Product>(`${this.baseUrl}/${productToRestore.id}/restore`, {}).pipe(
       tap((updatedProduct) => {
         const signalToUpdate = updatedProduct.type === 'note' ? this.notes : this.software;
@@ -121,21 +131,23 @@ export class ProductService {
           products.map(p => p.id === updatedProduct.id ? updatedProduct : p)
         );
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Restore product failed:', err)
+    });
   }
 
-  toggleFeaturedStatus(productToToggle: Product) {
+  toggleFeaturedStatus(productToToggle: Product): void {
     this.http.patch<Product>(`${this.baseUrl}/${productToToggle.id}/toggle-featured`, {}).pipe(
-      tap(() => {
+      tap((updatedProduct) => {
         const signalToUpdate = productToToggle.type === 'note' ? this.notes : this.software;
         signalToUpdate.update(products =>
           products.map(product =>
-            product.id === productToToggle.id
-              ? { ...product, isFeatured: !product.isFeatured }
-              : product
+            product.id === productToToggle.id ? updatedProduct : product
           )
         );
       })
-    ).subscribe();
+    ).subscribe({
+      error: err => console.error('Toggle featured status failed:', err)
+    });
   }
 }

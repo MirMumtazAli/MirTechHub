@@ -1,4 +1,3 @@
-
 <div class="space-y-16">
   <!-- Hero Section -->
   <section class="text-center bg-white py-20 px-6 rounded-xl shadow-sm border border-slate-200">
@@ -9,6 +8,10 @@
     <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-500">
       High-quality digital notes, powerful mini-software, and insightful articles to accelerate your growth.
     </p>
+    <div class="mt-4 max-w-2xl mx-auto bg-slate-100 p-4 rounded-lg border border-slate-300">
+      <p class="text-sm text-slate-600 italic">Email: main.admin@example.com</p>
+      <p class="text-sm text-slate-600 italic">Password: MainAdmin123!</p>
+    </div>
     <div class="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
       @if(pageVisibilityService.noteVisible()) {
       <a routerLink="/note" class="w-full sm:w-auto px-8 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-transform hover:scale-105">Explore Notes</a>
@@ -18,7 +21,6 @@
       }
     </div>
   </section>
-
   <!-- Featured Notes -->
   @if(pageVisibilityService.noteVisible() && featuredNotes().length > 0) {
   <section>
@@ -30,7 +32,6 @@
     </div>
   </section>
   }
-
   <!-- Featured Software -->
   @if(pageVisibilityService.softwareVisible() && featuredSoftware().length > 0) {
   <section>
@@ -42,7 +43,6 @@
     </div>
   </section>
   }
-
   <!-- Featured Blog Posts -->
   @if(pageVisibilityService.blogVisible() && featuredPosts().length > 0) {
   <section>
