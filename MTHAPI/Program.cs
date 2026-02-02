@@ -11,17 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
 
 // Add services to the container.
-
-// CORS Policy
+// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy
+            .AllowAnyOrigin()   // allows requests from any domain
+            .AllowAnyMethod()   // allows GET, POST, PUT, DELETE, etc.
+            .AllowAnyHeader();  // allows any header
     });
 });
+
+// Other services
+builder.Services.AddControllers();
 
 var connectionString = Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -94,7 +97,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll"); // Enable CORS
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
