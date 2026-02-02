@@ -5,6 +5,7 @@ import { Order, OrderStatus } from '../models/order.model';
 import { AuthService } from './auth.service';
 import { tap } from 'rxjs';
 import { OrderCreateDto } from '../models/dto/order.dto';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ import { OrderCreateDto } from '../models/dto/order.dto';
 export class OrderService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:5121/api/orders';
+  private readonly baseUrl = `${environment.api.apiUrl}/orders`;
 
   private readonly allOrders = signal<Order[]>([]);
   readonly orders = this.allOrders.asReadonly();

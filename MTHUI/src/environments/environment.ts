@@ -1,13 +1,13 @@
 export const environment = {
-  production: false,
+  production: true,
   appName: 'MTHUI',
   version: '0.0.1-dev',
   api: {
-    apiUrl: 'http://localhost:5121/api',
+    apiUrl: 'http://mirtechhub.somee.com/api',
     timeoutMs: 30000
   },
   logging: {
-    level: 'debug' // possible values: 'debug' | 'info' | 'warn' | 'error'
+    level: 'warn' // less verbose for production // possible values: 'debug' | 'info' | 'warn' | 'error'
   },
   featureFlags: {
     enableBetaUI: false
