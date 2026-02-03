@@ -1,7 +1,7 @@
 
 # MirTechHub - Digital E-Commerce Platform
 
-![MirTechHub Showcase](httpshttps://via.placeholder.com/1200x600.png?text=MirTechHub+Application+Showcase)
+![MirTechHub Showcase](http://mirtechhubui.somee.com/#/)
 *(Replace the above placeholder with a banner screenshot of your application)*
 
 **MirTechHub** is a modern, full-stack e-commerce platform designed for digital creators to sell products like study notes, mini-software, and publish insightful blog content. It features a clean, responsive user interface and a powerful, secure admin dashboard for complete content and site management.
@@ -132,4 +132,4 @@ You can change these credentials or add more admin users in this file before run
 
 Mir Mumtaz Ali - mirmumtazali7278@gmail.com
 
-Project Link: [https://github.com/your-username/mirtechhub](https://github.com/your-username/mirtechhub)
+Project Link: ([https://github.com/your-username/mirtechhub](http://mirtechhubui.somee.com/#/))
