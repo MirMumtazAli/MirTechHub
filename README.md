@@ -66,7 +66,7 @@ This project is built with a modern, robust technology stack chosen for performa
 
 ### Backend
 
-*   **Framework:** **.NET 8** / **ASP.NET Core Web API**
+*   **Framework:** **.NET 9** / **ASP.NET Core Web API**
 *   **Database:** **Entity Framework Core 8** with **SQL Server** (uses LocalDB by default).
 *   **Authentication:** **JWT (JSON Web Tokens)** with ASP.NET Core Identity.
 *   **Architecture:** Follows a clean, repository pattern for data access.
