@@ -63,7 +63,6 @@ This project is built with a modern, robust technology stack chosen for performa
 *   **Styling:** **Tailwind CSS**
 *   **State Management:** **Angular Signals** for reactive and performant state.
 *   **Rich Text Editing:** **Quill.js** for a powerful WYSIWYG editor.
-*   **Build Tool:** **Vite**
 
 ### Backend
 
