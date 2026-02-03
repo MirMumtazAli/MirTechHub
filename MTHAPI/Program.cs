@@ -11,15 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
 
 // Add services to the container.
-// Add CORS
+// Add this before builder.Build()
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowUI", policy =>
     {
-        policy
-            .AllowAnyOrigin()   // allows requests from any domain
-            .AllowAnyMethod()   // allows GET, POST, PUT, DELETE, etc.
-            .AllowAnyHeader();  // allows any header
+        policy.WithOrigins("http://mirtechhubui.somee.com") // Your UI domain
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -97,7 +97,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowUI");
 
 app.UseAuthentication();
 app.UseAuthorization();
