@@ -67,7 +67,7 @@ This project is built with a modern, robust technology stack chosen for performa
 ### Backend
 
 *   **Framework:** **.NET 9** / **ASP.NET Core Web API**
-*   **Database:** **Entity Framework Core 8** with **SQL Server** (uses LocalDB by default).
+*   **Database:** **Entity Framework Core** with **SQL Server** (uses LocalDB by default).
 *   **Authentication:** **JWT (JSON Web Tokens)** with ASP.NET Core Identity.
 *   **Architecture:** Follows a clean, repository pattern for data access.
 
@@ -79,7 +79,7 @@ Follow these instructions to get the project up and running on your local machin
 
 ### Prerequisites
 
-*   **.NET 8 SDK:** [Download here](https://dotnet.microsoft.com/download/dotnet/8.0)
+*   **.NET SDK** [Download here](https://dotnet.microsoft.com/download/dotnet/8.0)
 *   **Node.js and npm:** [Download here](https://nodejs.org/) (LTS version is recommended)
 *   **SQL Server:** **SQL Server Express LocalDB** is recommended, as it is pre-configured in `appsettings.json`. It typically comes with Visual Studio.
 
