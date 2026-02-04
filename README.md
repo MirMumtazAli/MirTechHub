@@ -1,14 +1,14 @@
 
-# MirTechHub - Digital E-Commerce Platform
+# MirTechHub - Digital E-Commerce Platform 
 
-![MirTechHub Showcase](screenshots/home%page.png)
+![Home Page](https://raw.githubusercontent.com/MirMumtazAli/MirTechHub/main/screenshots/home%20page.PNG)
 
 **MirTechHub** is a modern, full-stack e-commerce platform designed for digital creators to sell products like study notes, mini-software, and publish insightful blog content. It features a clean, responsive user interface and a powerful, secure admin dashboard for complete content and site management.
 
-[![Angular](https://img.shields.io/badge/Angular-20%2B-DD0031?style=for-the-badge&logo=angular)](https://angular.io/)
-[![ASP.NET Core](https://img.shields.io/badge/ASP.NET-8-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![SQL Server](https://img.shields.io/badge/SQL_Server-22-CC2927?style=for-the-badge&logo=microsoft-sql-server)](https://www.microsoft.com/en-us/sql-server)
+[![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular)](https://angular.io/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![MS SQL Server](https://img.shields.io/badge/SQL_Server-22-CC2927?style=for-the-badge&logo=microsoft-sql-server)](https://www.microsoft.com/en-us/sql-server)
 
 ---
 
@@ -38,17 +38,15 @@ The platform is split into two main experiences: the public-facing user storefro
 
 ---
 
+## 🌐 Live Demo
+[MirTechHub – Full-Stack E-Commerce Platform](http://mirtechhubui.somee.com)
+
+---
+
 ## 📸 Screenshots
 
-*(Replace these placeholders with your own application screenshots)*
+[⬇️ Download Project Documentation (PDF)](https://raw.githubusercontent.com/MirMumtazAli/MirTechHub/main/screenshots/MirTechHub%20%E2%80%93%20Full-Stack%20E-Commerce%20Platform.pdf)
 
-| Homepage                                        | Product Details Page                                    |
-| ----------------------------------------------- | ------------------------------------------------------- |
-| ![Homepage](https://via.placeholder.com/600x400.png?text=Homepage) | ![Product Details](https://via.placeholder.com/600x400.png?text=Product+Details) |
-
-| Admin Dashboard (Manage Notes)                        | Admin Site Settings                                       |
-| ----------------------------------------------------- | --------------------------------------------------------- |
-| ![Admin Dashboard](https://via.placeholder.com/600x400.png?text=Admin+Dashboard) | ![Admin Settings](https://via.placeholder.com/600x400.png?text=Admin+Settings)   |
 
 ---
 
@@ -58,7 +56,7 @@ This project is built with a modern, robust technology stack chosen for performa
 
 ### Frontend
 
-*   **Framework:** **Angular 20+** (Standalone Components, Signals, Zoneless)
+*   **Framework:** **Angular 19** (Standalone Components, Signals, Zoneless)
 *   **Styling:** **Tailwind CSS**
 *   **State Management:** **Angular Signals** for reactive and performant state.
 *   **Rich Text Editing:** **Quill.js** for a powerful WYSIWYG editor.
@@ -78,8 +76,8 @@ Follow these instructions to get the project up and running on your local machin
 
 ### Prerequisites
 
-*   **.NET SDK** [Download here](https://dotnet.microsoft.com/download/dotnet/8.0)
-*   **Node.js and npm:** [Download here](https://nodejs.org/) (LTS version is recommended)
+*   **.NET SDK** 
+*   **Node.js and npm** 
 *   **SQL Server:** **SQL Server Express LocalDB** is recommended, as it is pre-configured in `appsettings.json`. It typically comes with Visual Studio.
 
 ### 1. Backend Setup (.NET API)
