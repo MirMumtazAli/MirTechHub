@@ -45,7 +45,7 @@ The platform is split into two main experiences: the public-facing user storefro
 
 ## 📸 Screenshots
 
-[⬇️ Download Project Documentation (PDF)](https://raw.githubusercontent.com/MirMumtazAli/MirTechHub/main/screenshots/MirTechHub%20%E2%80%93%20Full-Stack%20E-Commerce%20Platform.pdf)
+[📄 MirTechHub – Full-Stack E-Commerce Platform (PDF)](https://github.com/MirMumtazAli/MirTechHub/blob/main/screenshots/MirTechHub%20%E2%80%93%20Full-Stack%20E-Commerce%20Platform.pdf)
 
 
 ---
