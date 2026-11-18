@@ -1,1 +1,2 @@
 C:\Users\MMA11\Desktop\MirTechHub\MTHUI\obj\Debug\MTHUI.esproj.CoreCompileInputs.cache
+C:\Users\MMA11\source\repos\MirMumtazAli\MirTechHub\MTHUI\obj\Debug\MTHUI.esproj.CoreCompileInputs.cache

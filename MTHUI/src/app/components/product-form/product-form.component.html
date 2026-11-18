@@ -25,7 +25,7 @@
       <label for="image" class="block text-sm font-medium text-slate-700">Main Image</label>
       <div class="mt-2 flex items-center space-x-4">
         @if(productForm.get('imageUrl')?.value) {
-        <img [src]="productForm.get('imageUrl')?.value" alt="Image preview" class="h-16 w-16 rounded-md object-cover border">
+        <img [src]="$safeNavigationMigration(productForm.get('imageUrl')?.value)" alt="Image preview" class="h-16 w-16 rounded-md object-cover border">
         }
         <input type="file" id="image" (change)="onFileSelected($event, 'imageUrl')" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
       </div>
