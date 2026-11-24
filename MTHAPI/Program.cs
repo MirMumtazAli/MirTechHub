@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var Configuration = builder.Configuration;
@@ -16,7 +17,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowUI", policy =>
     {
-        policy.WithOrigins("http://mirtechhubui.somee.com") // Your UI domain
+        policy.WithOrigins("http://mirtechhubui.somee.com", "http://127.0.0.1:59248",
+    "http://localhost:59248") // Your UI domain
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -50,7 +52,32 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<MTHDbContext>()
     .AddDefaultTokenProviders();
 
-// Add Authentication with JWT Bearer
+// Read JWT configuration
+var jwtKey = Configuration["Jwt:Key"];
+var jwtIssuer = Configuration["Jwt:Issuer"];
+var jwtAudience = Configuration["Jwt:Audience"];
+
+// Validate JWT configuration
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is missing in appsettings.json.");
+}
+
+if (string.IsNullOrWhiteSpace(jwtIssuer))
+{
+    throw new InvalidOperationException("JWT Issuer is missing in appsettings.json.");
+}
+
+if (string.IsNullOrWhiteSpace(jwtAudience))
+{
+    throw new InvalidOperationException("JWT Audience is missing in appsettings.json.");
+}
+
+// Create signing key
+var signingKey = new SymmetricSecurityKey(
+    Encoding.UTF8.GetBytes(jwtKey));
+
+// Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,16 +88,19 @@ builder.Services.AddAuthentication(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
+
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = Configuration["Jwt:Audience"],
-        ValidIssuer = Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidAudience = jwtAudience,
+        ValidIssuer = jwtIssuer,
+        IssuerSigningKey = signingKey
     };
 });
-
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -78,7 +108,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 // Seed the database with roles and admin users
 using (var scope = app.Services.CreateScope())

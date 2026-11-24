@@ -1,22 +1,18 @@
 export const environment = {
-  production: true,
+  production: false,
   appName: 'MTHUI',
   version: '0.0.1-dev',
+
   api: {
-    apiUrl: 'http://mirtechhub.somee.com/api',
+    apiUrl: 'http://localhost:5121/api',
     timeoutMs: 30000
   },
+
   logging: {
-    level: 'warn' // less verbose for production // possible values: 'debug' | 'info' | 'warn' | 'error'
+    level: 'debug'
   },
+
   featureFlags: {
-    enableBetaUI: false
+    enableBetaUI: true
   }
 };
-
-/*
- * For easier debugging in development mode, you can import a file to ignore zone related error
- * stack frames such as `zone.js/plugins/zone-error`. This import should be commented out in production mode
- * because it will have a performance impact when errors are thrown.
- */
-// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.

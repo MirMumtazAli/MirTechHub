@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-// This class represents the join table between Order and Product
 public class OrderItem
 {
     // Composite Primary Key (configured in DbContext)
-    public string OrderId { get; set; }
+    public string OrderId { get; set; } = string.Empty;
+
     public int ProductId { get; set; }
 
-    [ForeignKey("OrderId")]
-    public virtual Order Order { get; set; }
+    [ForeignKey(nameof(OrderId))]
+    public virtual Order Order { get; set; } = null!;
 
-    [ForeignKey("ProductId")]
-    public virtual Product Product { get; set; }
+    [ForeignKey(nameof(ProductId))]
+    public virtual Product Product { get; set; } = null!;
 
     public int Quantity { get; set; }
 

@@ -51,44 +51,69 @@ public class AuthController : ControllerBase
         return Ok(new { Status = "Success", Message = "User created successfully!" });
     }
 
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
+
+        if (user == null ||
+            !await _userManager.CheckPasswordAsync(user, loginDto.Password))
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
-
-            return Ok(new AuthResponseDto
-            {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expiration = token.ValidTo
-            });
+            return Unauthorized();
         }
-        return Unauthorized();
+
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        // Ensure claim values are never null.
+        var email = user.Email ?? loginDto.Email;
+        var name = user.Name ?? user.UserName ?? email;
+
+        var authClaims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Email, email),
+        new Claim(ClaimTypes.Name, name),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
+
+        foreach (var userRole in userRoles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+        }
+
+        // Validate JWT configuration.
+        var jwtKey = _configuration["Jwt:Key"];
+        var jwtIssuer = _configuration["Jwt:Issuer"];
+        var jwtAudience = _configuration["Jwt:Audience"];
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
+            throw new InvalidOperationException("JWT Key is missing.");
+
+        if (string.IsNullOrWhiteSpace(jwtIssuer))
+            throw new InvalidOperationException("JWT Issuer is missing.");
+
+        if (string.IsNullOrWhiteSpace(jwtAudience))
+            throw new InvalidOperationException("JWT Audience is missing.");
+
+        var authSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey));
+
+        var token = new JwtSecurityToken(
+            issuer: jwtIssuer,
+            audience: jwtAudience,
+            expires: DateTime.UtcNow.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(
+                authSigningKey,
+                SecurityAlgorithms.HmacSha256)
+        );
+
+        return Ok(new AuthResponseDto
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Expiration = token.ValidTo
+        });
     }
 
     [Authorize]

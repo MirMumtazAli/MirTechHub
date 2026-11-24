@@ -1,6 +1,4 @@
 ﻿using DAL.DAO;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +6,7 @@ public class Order
 {
     [Key]
     [MaxLength(50)]
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
     public DateTime Date { get; set; }
 
@@ -19,12 +17,14 @@ public class Order
     [Required]
     public OrderStatus Status { get; set; }
 
-    // Foreign Key to User
-    public string UserId { get; set; }
+    // Foreign key to User
+    [Required]
+    public string UserId { get; set; } = null!;
 
-    [ForeignKey("UserId")]
-    public virtual ApplicationUser User { get; set; }
+    [ForeignKey(nameof(UserId))]
+    public virtual ApplicationUser User { get; set; } = null!;
 
     // Navigation property for the join table
-    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public virtual ICollection<OrderItem> OrderItems { get; set; }
+        = new List<OrderItem>();
 }

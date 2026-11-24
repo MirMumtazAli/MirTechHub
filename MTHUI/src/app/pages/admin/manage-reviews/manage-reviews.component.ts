@@ -12,7 +12,7 @@ import { PaginationComponent } from '../../../components/pagination/pagination.c
   standalone: true,
   templateUrl: './manage-reviews.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, ReactiveFormsModule, ConfirmDeleteComponent, PaginationComponent]
+  imports: [ReactiveFormsModule, ConfirmDeleteComponent, PaginationComponent]
 })
 export class ManageReviewsComponent {
   private reviewService = inject(ReviewService);

@@ -17,7 +17,6 @@
     <PackageJsonDependenciesAngularPlatformBrowser Condition="$(PackageJsonDependenciesAngularPlatformBrowser) == ''">^22.2.6</PackageJsonDependenciesAngularPlatformBrowser>
     <PackageJsonDependenciesAngularPlatformBrowserDynamic Condition="$(PackageJsonDependenciesAngularPlatformBrowserDynamic) == ''">^22.2.6</PackageJsonDependenciesAngularPlatformBrowserDynamic>
     <PackageJsonDependenciesAngularRouter Condition="$(PackageJsonDependenciesAngularRouter) == ''">^22.2.6</PackageJsonDependenciesAngularRouter>
-    <PackageJsonDependenciesJestEditorSupport Condition="$(PackageJsonDependenciesJestEditorSupport) == ''">*</PackageJsonDependenciesJestEditorSupport>
     <PackageJsonDependenciesRxjs Condition="$(PackageJsonDependenciesRxjs) == ''">~7.8.0</PackageJsonDependenciesRxjs>
     <PackageJsonDependenciesTslib Condition="$(PackageJsonDependenciesTslib) == ''">^2.3.0</PackageJsonDependenciesTslib>
     <PackageJsonDependenciesZoneJs Condition="$(PackageJsonDependenciesZoneJs) == ''">~0.16.0</PackageJsonDependenciesZoneJs>
@@ -28,6 +27,7 @@
     <PackageJsonDevdependenciesAutoprefixer Condition="$(PackageJsonDevdependenciesAutoprefixer) == ''">^10.4.23</PackageJsonDevdependenciesAutoprefixer>
     <PackageJsonDevdependenciesEslint Condition="$(PackageJsonDevdependenciesEslint) == ''">^9.39.2</PackageJsonDevdependenciesEslint>
     <PackageJsonDevdependenciesIstanbulLibInstrument Condition="$(PackageJsonDevdependenciesIstanbulLibInstrument) == ''">^6.0.3</PackageJsonDevdependenciesIstanbulLibInstrument>
+    <PackageJsonDevdependenciesJasmine Condition="$(PackageJsonDevdependenciesJasmine) == ''">^4.6.0</PackageJsonDevdependenciesJasmine>
     <PackageJsonDevdependenciesJasmineCore Condition="$(PackageJsonDevdependenciesJasmineCore) == ''">~5.2.0</PackageJsonDevdependenciesJasmineCore>
     <PackageJsonDevdependenciesKarma Condition="$(PackageJsonDevdependenciesKarma) == ''">~6.4.0</PackageJsonDevdependenciesKarma>
     <PackageJsonDevdependenciesKarmaChromeLauncher Condition="$(PackageJsonDevdependenciesKarmaChromeLauncher) == ''">~3.2.0</PackageJsonDevdependenciesKarmaChromeLauncher>
@@ -37,5 +37,10 @@
     <PackageJsonDevdependenciesPostcss Condition="$(PackageJsonDevdependenciesPostcss) == ''">^8.5.6</PackageJsonDevdependenciesPostcss>
     <PackageJsonDevdependenciesTailwindcss Condition="$(PackageJsonDevdependenciesTailwindcss) == ''">^3.4.19</PackageJsonDevdependenciesTailwindcss>
     <PackageJsonDevdependenciesTypescript Condition="$(PackageJsonDevdependenciesTypescript) == ''">~6.0.3</PackageJsonDevdependenciesTypescript>
+    <PackageJsonOverridesPicomatch Condition="$(PackageJsonOverridesPicomatch) == ''">^4.0.3</PackageJsonOverridesPicomatch>
+    <PackageJsonOverridesAnymatchPicomatch Condition="$(PackageJsonOverridesAnymatchPicomatch) == ''">^2.3.2</PackageJsonOverridesAnymatchPicomatch>
+    <PackageJsonOverridesReaddirpPicomatch Condition="$(PackageJsonOverridesReaddirpPicomatch) == ''">^2.3.2</PackageJsonOverridesReaddirpPicomatch>
+    <PackageJsonOverridesKarmaPicomatch Condition="$(PackageJsonOverridesKarmaPicomatch) == ''">^2.3.2</PackageJsonOverridesKarmaPicomatch>
+    <PackageJsonOverridesTailwindcssPicomatch Condition="$(PackageJsonOverridesTailwindcssPicomatch) == ''">^2.3.2</PackageJsonOverridesTailwindcssPicomatch>
   </PropertyGroup>
 </Project>

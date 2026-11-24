@@ -37,7 +37,7 @@ public class BlogPostService : IBlogPostService
             Content = postDto.Content,
             Date = postDto.Date,
             Author = postDto.Author,
-            ImageUrl = postDto.ImageUrl,
+            ImageUrl = postDto.ImageUrl ?? string.Empty,
             IsFeatured = postDto.IsFeatured,
             IsDeleted = false
         };
@@ -60,7 +60,7 @@ public class BlogPostService : IBlogPostService
         post.Content = postDto.Content;
         post.Date = postDto.Date;
         post.Author = postDto.Author;
-        post.ImageUrl = postDto.ImageUrl;
+        post.ImageUrl = postDto.ImageUrl ?? string.Empty;
         post.IsFeatured = postDto.IsFeatured;
 
         _blogPostRepository.Update(post);
